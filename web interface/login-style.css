@@ -2,7 +2,6 @@ body {
 	height: 100vh;
 	margin: 0;
 	overflow: hidden;
-	color: var(--white);
 }
 h1 {
 	font-family: poppins, vazir; font-size: 8vh; font-weight: bolder;

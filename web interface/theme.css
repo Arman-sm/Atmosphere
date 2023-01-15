@@ -101,6 +101,9 @@ body {
 	font-family: poppins, vazir;
 }
 button { -webkit-tap-highlight-color: transparent; }
+input[type = text], input[type = password] {
+	color: var(--black);
+}
 button, input[type = text], input[type = password]{
 	font-family: poppins, vazir;
 	font-size: 100%;
