@@ -1,4 +1,5 @@
 CREATE TABLE Users(
 	ID varchar(50),
-	Hashed_Password varchar(28)
+	Hashed_Password varchar(28),
+	PRIMARY KEY (ID)
 );
