@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Atmosphere</title>
+	<link rel="icon" href="/web/images/favicon.svg"/>
+	<link rel="stylesheet" type="text/css" href="/web/theme.css"/>
+	<link rel="stylesheet" type="text/css" href="/web/style.css"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="/web/scripts/Howler.js" defer></script>
+	<script src="/web/scripts/home_music_controller.js" defer></script>
+	<script src="/web/scripts/home_user_customization.js" defer></script>
+	<script src="/web/scripts/home_upload_controller.js" defer></script>
+	<script src="/web/scripts/jsmediatags.min.js" defer></script>
+</head>
+<body>
+<div id="container">
+<!-- #region upload modal -->
+<div id="upload-background" class="invisible"
+	onclick="if (event.target == this) { this.classList.toggle('invisible', true); }">
+	<!-- #region upload form -->
+	<form id="upload-page" action="/api/v1/audio" method="POST" enctype="multipart/form-data" onsubmit="console.log(window.a = event);setTimeout(refresh, 2500)">
+		<div id="upload-file-section"
+		ondrop="fileDropForUpload(event, this); this.classList.toggle('active-drop', false)"
+		ondragenter="this.classList.toggle('active-drop', true)"
+		ondragleave="this.classList.toggle('active-drop', false)"
+		ondragover="event.preventDefault()">
+		<span
+		ondrop="fileDropForUpload(event, this.parentElement); this.parentElement.classList.add('active-drop')"
+		ondragenter="this.parentElement.classList.add('active-drop')"
+		ondragover="event.preventDefault()"
+		>Drag and Drop</span>
+			<button class="submit" onclick="document.getElementById('upload-audio-file-input').click()"
+				style="width: 8rem; margin-bottom: auto; box-shadow: 0 0.25rem 0.75rem 0 var(--gray);"
+			>Select File</button>
+			<!-- hidden -->
+			<input id="upload-audio-file-input" type="file" name="audioFile" style="display: none;" required
+				onchange="fillUploadForm(this.files[0])"
+				accept=".mp3, .mpeg, .opus, .ogg, .oga, .wav, .aac, .caf, .m4a, .mp4, .weba, .webm, .dolby, .flac"
+			/>
+	</div>
+	<button id="upload-next" type="button" class="submit no-border no-max-width">
+		Next
+	</button>
+
+	<!-- 2nd page -->
+	<div id="sound-info" class="invisible">
+		<input type="file" id="upload-picture" name="Picture" class="invisible"/>
+		<img src="/web/images/music.svg" id="upload-picture-graphic"/>
+		<div>
+			<input type="text" id="upload-title" name="Title" maxlength="50" placeholder="Title" class="no-max-width"/>
+			<input type="text" id="upload-singer" name="Singer" maxlength="50" placeholder="Singer"class="no-max-width"/>
+			<input type="text" id="upload-format" name="Format" maxlength="50" placeholder="Format" class="no-max-width"/>
+		</div>
+	</div>
+	<!-- close/next -->
+	<button id="submit-upload" type="submit" class="no-max-width invisible" onclick="uploadPage()">
+		Submit
+	</button>
+	</form>
+	<!-- #endregion -->
+</div>
+<!-- #endregion -->
+<div id="quick-access">
+	<button type="button" id="quick-access-profile" class="black no-shadow">
+		<div>
+			<span>A</span>
+		</div>
+		<span>Arman Salimi</span>
+	</button>
+	<button type="button" id="quick-access-upload" class="black no-shadow" onclick="document.getElementById('upload-background').classList.toggle('invisible')">
+		<img src="./web/images/upload.svg">
+		<span>Upload</span>
+	</button>
+</div>
+<div id="browser">
+	<h1>Atmosphere</h1>
+	<div id="browser-item-container">
+	</div>
+</div>
+<div id="music-control">
+	<img src="./web/images/music.svg"/>
+	<div id="controller">
+		<div class="flex flex-center">
+			<button type="button" class="no-border">
+				<img src="./web/images/next.svg" style="rotate: 180deg;" class="unselectable"/>
+			</button>
+			<button type="button" class="no-border" onclick="if (window.player.playing()) { pause() } else { resume() }">
+				<img src="./web/images/pause.svg" class="unselectable"/>
+			</button>
+			<button type="button" class="no-border">
+				<img src="./web/images/next.svg" class="unselectable"/>
+			</button>
+		</div>
+		<div id="timeline">
+			<span>0:00</span>
+			<input type="range" min="0" max="60" value="0"/>
+			<span>0:00</span>
+		</div>
+	</div>
+</div>
+</div>
+</body>
+</html>

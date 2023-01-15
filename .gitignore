@@ -1,0 +1,5 @@
+.env
+.vscode
+audios/*
+audioCovers/*
+node_modules

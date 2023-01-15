@@ -1,0 +1,57 @@
+body {
+	height: 100vh;
+	margin: 0;
+	overflow: hidden;
+	color: var(--white);
+}
+h1 {
+	font-family: poppins, vazir; font-size: 8vh; font-weight: bolder;
+	color: var(--black);
+	margin: auto auto 5vh auto;
+}
+.input {
+	margin: 0 auto;
+	max-width: 75% !important;
+	width: 75%;
+	height: 3rem !important;
+	font-family: poppins, vazir; font-size: 17px;
+	margin-bottom: 15px;
+}
+form {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+}
+#login-container {
+	display: flex;
+	flex-direction: column;
+	float: left;
+	height: 100vh;
+	width: 35%;
+	background-color: var(--lighter-gray);
+	box-shadow: 5px 0 50px 0px grey;
+	z-index: 1;
+}
+#picture {
+	justify-content: left;
+	display: flex;
+	clear: right;
+	height: 100vh;
+	background: url(./images/note\ rainbow.png) no-repeat;
+	background-position: center;
+	background-size: cover;
+	overflow: hidden;
+}
+@media (prefers-color-scheme: dark) {
+	#picture {
+		filter: brightness(50%);
+	}
+}
+@media (max-aspect-ratio: 3 / 2) {
+	#login-container {
+		width: 100%;
+	}
+	#picture {
+		display: none;
+	}
+}

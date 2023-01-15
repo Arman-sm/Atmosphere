@@ -1,0 +1,178 @@
+:root {
+	--white : hsl(0, 0%, 90%);
+	--lighter-gray: hsl(0, 0%, 85%);
+	--light-gray: hsl(0, 0%, 80%);
+	--gray: hsl(0, 0%, 70%);
+	--dark-gray: hsl(0, 0%, 60%);
+	--yellow : hsl(40, 90%, 50%);
+	--lime : hsl(145, 70%, 50%);
+	--green : hsl(100, 30%, 50%);
+	--lighter-black : hsl(180, 10%, 25%);
+	--black : hsl(180, 10%, 15%);
+	
+	--c-white : hsl(0, 0%, 90%);
+	--c-lighter-gray: hsl(0, 0%, 85%);
+	--c-light-gray: hsl(0, 0%, 80%);
+	--c-gray: hsl(0, 0%, 70%);
+	--c-dark-gray: hsl(0, 0%, 60%);
+	--c-yellow : hsl(40, 90%, 50%);
+	--c-lime : hsl(145, 70%, 50%);
+	--c-green : hsl(100, 30%, 50%);
+	--c-lighter-black : hsl(180, 10%, 25%);
+	--c-black : hsl(180, 10%, 15%);
+}
+@media (prefers-color-scheme: dark) {
+	:root {
+		--white : hsl(0, 0%, 10%);
+		--lighter-gray: hsl(0, 0%, 15%);
+		--light-gray: hsl(0, 0%, 20%);
+		--gray: hsl(0, 0%, 30%);
+		--dark-gray: hsl(0, 0%, 40%);
+		--yellow : hsl(40, 90%, 50%);
+		--lime : hsl(145, 70%, 50%);
+		--green : hsl(100, 30%, 50%);
+		--lighter-black : hsl(180, 10%, 25%);
+		--black : hsl(180, 10%, 85%);
+	}
+}
+@font-face {
+	font-family: poppins, vazir;
+	font-weight: 400;
+	src: url(./fonts/poppins/Poppins-Regular.ttf);
+}
+@font-face {
+	font-family: poppins, vazir;
+	font-weight: 500;
+	src: url(./fonts/poppins/Poppins-Medium.ttf);
+}
+@font-face {
+	font-family: poppins, vazir;
+	font-weight: 600;
+	src: url(./fonts/poppins/Poppins-SemiBold.ttf);
+}
+@font-face {
+	font-family: poppins, vazir;
+	font-weight: 700;
+	src: url(./fonts/poppins/Poppins-Bold.ttf);
+}
+.height-auto {
+	max-height: none !important;
+	min-height: 0 !important;
+	height: auto !important;
+}
+.width-auto {
+	max-width: none !important;
+	min-width: 0 !important;
+	width: auto !important;
+}
+.no-max-width {
+	max-width: none !important;
+}
+.unselectable {
+	-moz-user-darg: none;
+	-webkit-user-drag: none;
+}
+.flex {
+	display: flex;
+}
+.flex-column {
+	flex-direction: column;
+}
+.flex-center {
+	justify-content: center;
+	align-items: center;
+}
+.ratio-1-1 {
+	aspect-ratio: 1/1;
+}
+.no-shadow {
+	box-shadow: none !important;
+}
+.no-border, .no-border:hover {
+	border: none !important;
+	outline: none !important;
+}
+.black {
+	--white : hsl(180, 10%, 15%);
+	--green : hsl(180, 10%, 25%)
+}
+body {
+	accent-color: var(--lime);
+	font-family: poppins, vazir;
+}
+button { -webkit-tap-highlight-color: transparent; }
+button, input[type = text], input[type = password]{
+	font-family: poppins, vazir;
+	font-size: 100%;
+	background-color: var(--white);
+	box-sizing: border-box;
+	padding: 0 1rem;
+	/* height */
+	min-height: 2rem;
+	max-height: 3rem;
+	height: 100%;
+	/* width */
+	min-width: 5rem;
+	max-width: 20rem;
+	width: 100%;
+	/* border */
+	border: none;
+	border-radius: .5rem;
+	/* shadow */
+	box-shadow: 0 .15rem .125rem 0 var(--light-gray);
+}
+button[type = button]:hover, input[type = text]:focus, input[type = password]:focus {
+	outline: 0.1rem solid var(--green);
+}
+button {
+	color: var(--dark-gray);
+	cursor: pointer;
+}
+button[type = submit], .submit {
+	background-color: var(--lime);
+	text-align: center;
+	color: white;
+}
+button[type = submit]:hover, .submit:hover, button[type = button]:active {
+	background-color: var(--green);
+}
+button[type = button]:active, .submit:active {
+	color: white;
+}
+button[type = submit]:active, .submit:active {
+	filter: saturate(10%);
+}
+/* range */
+input[type = range] {
+	appearance: none;
+	border-radius: 20px;
+	height: 10px;
+	min-width: 300px;
+	max-width: 500px;
+	background-color: var(--lighter-gray);
+}
+input[type = range]::-webkit-slider-thumb {
+	appearance: none;
+	height: 20px;
+	width: 10px;
+	border-radius: 5px;
+	background: var(--lime);
+}
+input[type = range]::-moz-range-thumb {
+	appearance: none;
+	height: 20px;
+	width: 10px;
+	border-radius: 5px;
+	background: var(--lime);
+}
+a {
+	margin: 0 auto auto auto;
+	color: var(--green);
+	font-family: poppins, vazir; font-size: 15px;
+}
+a:hover {
+	color: var(--lime);
+	text-decoration: underline;
+	cursor: pointer;
+	font-weight: 700;
+}

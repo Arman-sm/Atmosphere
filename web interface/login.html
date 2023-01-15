@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+	<title>Login</title>
+	<meta charset="utf-8"/>
+	<link rel="icon" href="/web/images/favicon.svg"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/web/theme.css"/>
+	<link rel="stylesheet" href="/web/login-style.css"/>
+</head>
+
+<body>
+	<div id="login-container">
+		<h1>Login</h1>
+		<form id="form" action="/api/v1/token/cookie" method="post" onerror="console.log(event); event.preventDefault()">
+			<input type="text" class="input" name="ID" placeholder="Username" required/>
+			<input type="password" class="input" name="password" placeholder="Password" required/>
+			<button type="submit" class="input" id="sign-in">sign in</button>
+		</form>
+		<a tabindex="0" alt="create an account" href="/register">Don't have an account? Make one</a>
+	</div>
+	<div id="picture"></div>
+</body>
+</html>
