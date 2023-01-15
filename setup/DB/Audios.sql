@@ -5,4 +5,4 @@ CREATE TABLE Audios(
 	Owner_ID varchar(50),
 	PRIMARY KEY (ID),
 	FOREIGN KEY (Owner_ID) REFERENCES USERS(ID)
-)
+);
