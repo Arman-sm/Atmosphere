@@ -17,13 +17,13 @@ timeline.addEventListener("change", () => {
 
 // Pauses the music and changes the ui based on the change
 function pause() {
-	pausePlayButton.src = "./images/pause.svg"
+	pausePlayButton.src = "/web/images/pause.svg"
 	player.pause()
 	clearInterval(timelineUpdaterID)
 }
 // Plays the music and changes the ui based on the change
 function play() {
-	pausePlayButton.src = "./images/play.svg"
+	pausePlayButton.src = "/web/images/play.svg"
 	player.play()
 	// Updating the timeline
 	timelineUpdaterID = setInterval(() => {
@@ -74,11 +74,12 @@ async function refresh() {
 		const title = await queryAudioMetadata(audio, "Title")
 		const singer = await queryAudioMetadata(audio, "Singer")
 		browser.innerHTML += `
-		<div class="browser-item" data-item-type="audio" data-audio-id="${audio}" onclick='browserItemClick(this);'>
+		<button class="browser-item" data-item-type="audio" data-audio-id="${audio}" onclick='browserItemClick(this)'
+			type="button" title="${title || "No title"}${singer ? ` by ${singer}` : ""}">
 			<div></div>
 			<span title="${title}">${title}</span>
 			<span title="${singer}">${singer}</span>
-		</div>\n
+		</button>\n
 		`
 	};
 }

@@ -187,12 +187,19 @@ h1 {
 	flex-grow: 1;
 	min-width: 8rem;
 	max-width: 20rem;
+	width: auto;
+	min-height: 0;
+	max-height: none;
+	height: auto;
 	border-radius: 1rem;
 	padding: 0.5rem;
 	background-color: var(--white);
 	box-shadow: 0 3px 5px 0 var(--gray);
 	transition: box-shadow 0.25s;
 	overflow: hidden;
+}
+.browser-item:hover {
+	background-color: var(--white) !important;
 }
 .browser-item:hover {
 	box-shadow: 0 6px 10px 0 var(--gray);
@@ -228,6 +235,7 @@ h1 {
 	overflow: hidden;
 	width: 10rem;
 	display: block;
+	margin: auto;
 	color: var(--dark-gray);
 }
 .browser-item span:first-of-type {

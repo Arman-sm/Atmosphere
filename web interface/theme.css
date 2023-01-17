@@ -3,7 +3,7 @@
 	--lighter-gray: hsl(0, 0%, 85%);
 	--light-gray: hsl(0, 0%, 80%);
 	--gray: hsl(0, 0%, 70%);
-	--dark-gray: hsl(0, 0%, 60%);
+	--dark-gray: hsl(0, 0%, 50%);
 	--yellow : hsl(40, 90%, 50%);
 	--lime : hsl(145, 70%, 50%);
 	--green : hsl(100, 30%, 50%);
@@ -152,7 +152,7 @@ input[type = range] {
 	height: 10px;
 	min-width: 300px;
 	max-width: 500px;
-	background-color: var(--lighter-gray);
+	background-color: var(--light-gray);
 }
 input[type = range]::-webkit-slider-thumb {
 	appearance: none;
