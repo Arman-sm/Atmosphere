@@ -2,14 +2,15 @@ const allowedAudioFormats = [
 	'mp3', 'mpeg', 'opus', 'ogg', 'oga', 'wav', 'aac', 'caf', 'm4a', 'mp4','weba', 'webm', 'dolby', 'flac'
 ]
 
-function manipulateAudioMetadata(database, audioID, updatedData) {
+async function manipulateAudioMetadata(database, audioID, updatedData) {
+	// Finding table columns that the client is allowed to manipulate
+	if (typeof allowedFields === "undefined") {
+		global.allowedFields = (await database.query(`SHOW COLUMNS FROM Audios;`, [audioID]))[0]
+			.map(field => field.Field)
+			.filter(item => !(["ID", "Owner_ID"].includes(item)))
+	}
 	return new Promise( async (resolve, reject) => { 
 	try {
-		// Finding table columns that the client is allowed to manipulate
-		let allowedFields = await database.query(`SELECT * FROM Audios WHERE ID = ?;`, [audioID])
-		allowedFields = allowedFields[1]
-			.map(field => field.name)
-			.filter(item => !["ID", "Owner_ID"].includes(item))
 		// Applying changes to the database where possible
 		for (property in updatedData) {
 			if (property === "Format" && !allowedAudioFormats.includes(updatedData[property].toLowerCase())) {
@@ -24,7 +25,7 @@ function manipulateAudioMetadata(database, audioID, updatedData) {
 		}
 		resolve()
 	} catch (err) {
-		reject(err)
+		reject()
 	}
 	})
 }
@@ -33,7 +34,7 @@ function updateAudioData(req, res, database) {
 	if (!req.params["Audio_ID"]) { res.status(400).end("Audio ID Not Specified") }
 	manipulateAudioMetadata(database, req.params["Audio_ID"], req.body).then(
 		() => res.status(200).end(),
-		err => {res.end(400).end(); console.error(err)}
+		err => res.end(400).end()
 	)
 }
 
@@ -55,7 +56,7 @@ function registerAudio(req, res, database) {
 	registerAudioToDB(database, req.file.filename, req.user.ID, req.body).then(
 		ID => {
 			res.status(201)
-			if (req.params.returnAudioID) {
+			if (req.query.returnAudioID) {
 				return res.status(201).end(ID)
 			}
 			res.status(201).end()
