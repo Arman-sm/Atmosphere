@@ -40,7 +40,7 @@ function registerUser(ID, password, database) {
 				[ID, hash(password)]
 			)
 		} catch (err) {
-			reject(err)
+			reject()
 		}
 		resolve(jwt.sign({ ID : ID }, process.env.JWT_SECRET, { expiresIn : "2h" }))
 	})
@@ -49,14 +49,14 @@ function registerUser(ID, password, database) {
 function sentRegisterUserToken(req, res, database) {
 	registerUser(req.body.ID, req.body.password, database).then(
 		token => res.status(201).end(token),
-		err => {console.error(err); res.status(500).end(err)}
+		err => res.status(400).end(err)
 	)
 }
 
 function setRegisterAuthorizationCookie(req, res, database) {
 	registerUser(req.body.ID, req.body.password, database).then(
 		token => res.cookie("authorization", "Bearer " + token).redirect("/web"),
-		err => {console.error(err); res.status(500).end(err)}
+		err => res.status(400).end(err)
 	)
 }
 
