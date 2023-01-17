@@ -62,17 +62,12 @@ function setRegisterAuthorizationCookie(req, res, database) {
 
 function generateToken(UserID, enteredPassword, database) {
 	return new Promise(async (resolve, reject) => {
-	if (!enteredPassword) {
-		reject("Password Not Specified")
-	}
-	const results = (await database.query("SELECT Hashed_Password FROM Users WHERE ID = ?", [UserID]))[0]
-	if (results.length === 0) {
-		reject("User Not Found")
-	}
-	if (results[0].Hashed_Password === hash(enteredPassword)) {
-		return resolve(jwt.sign({ ID : UserID }, process.env.JWT_SECRET, { expiresIn : "2h" }))
-	}
-	reject("User Not Found or Password is Incorrect")
+		const results = (await database.query("SELECT Hashed_Password FROM Users WHERE ID = ?", [UserID]))[0]
+		if (results[0]?.Hashed_Password === hash(enteredPassword)) {
+			resolve(jwt.sign({ ID : UserID }, process.env.JWT_SECRET, { expiresIn : "2h" }))
+		}
+		// The same thing happens if username or password is not specified or is invalid
+		reject("User Not Found or Password is Incorrect")
 	})
 }
 
