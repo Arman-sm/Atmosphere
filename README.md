@@ -1,6 +1,8 @@
 # Atmosphere
 A node.js server for storing audios that also has a web interface
 
+For API's documentation please check out the wiki.
+
 ## Setup
 ### Requirements
 - MySQL version 8
