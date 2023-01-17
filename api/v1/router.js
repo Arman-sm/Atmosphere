@@ -1,4 +1,4 @@
-const queryAudio = require("./view/audio.js")
+const { queryAudio, returnAudios } = require("./view/audio.js")
 const { authenticate, sendToken, sentRegisterUserToken, setRegisterAuthorizationCookie, setAuthorizationCookie } = require("./authentication")
 const { returnUserID } = require("./view/user")
 const { registerAudio, updateAudioData } = require("./controller.js")
@@ -40,14 +40,8 @@ function passDB(func) {
 router.route("/audio").post(multer.single("audioFile"), passDB(registerAudio))
 router.route("/audio/:Audio_ID").get(passDB(queryAudio)).patch(passDB(updateAudioData))
 
-router.get("/audios", (req, res) => {
-	database.query(`SELECT ID FROM Audios WHERE Owner_ID = ?;`, [req.user.ID]).then(
-		results => {res.status(200).json(results[0].map(item => item.ID)).end()},
-		err => {res.status(500).end("Internal Error"); console.error(err)}
-		)
-	}
-)
-	
+router.get("/audios", passDB(returnAudios))
+
 router.all("*", (req, res) => {
 	res.status(404).end("Not Found")
 })

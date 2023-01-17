@@ -1,6 +1,15 @@
 const { createReadStream } = require("fs")
 const { stat } = require("fs/promises")
 const { getAudioDurationInSeconds } = require("get-audio-duration")
+
+function returnAudios(req, res, database) {
+	database.query(`SELECT ID FROM Audios WHERE Owner_ID = ?;`, [req.user.ID]).then(
+		results => {res.status(200).json(results[0].map(item => item.ID)).end()},
+		err => {res.status(500).end("Internal Error"); console.error(err)}
+	)
+}
+
+
 // Pipes the music to the client from the specified start in seconds
 async function pipeMusic(path, res, start) {
 	if (!start) { start = 0 }
@@ -29,7 +38,7 @@ async function pipeMusic(path, res, start) {
 	})
 	})
 }
-async function queryMusic(req, res, database) {
+async function queryAudio(req, res, database) {
 	const { Audio_ID } = req.params
 	if (!Audio_ID) { return res.status(404).end("Audio ID Not Specified") }
 	try {
@@ -60,4 +69,4 @@ async function queryMusic(req, res, database) {
 	} catch (err) { console.error(err); res.status(500).end("Internal Error"); }
 }
 
-module.exports = queryMusic
+module.exports = { queryAudio, returnAudios }
