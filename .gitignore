@@ -1,5 +1,5 @@
 .env
 .vscode
 audios/*
-audioCovers/*
+audio covers/*
 node_modules

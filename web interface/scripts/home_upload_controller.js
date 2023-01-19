@@ -10,10 +10,8 @@ const acceptedFormats = [
 	'mp3', 'mpeg', 'opus', 'ogg', 'oga', 'wav', 'aac', 'caf', 'm4a', 'mp4','weba', 'webm', 'dolby', 'flac'
 ]
 
-function toBase64String(buffer) {
-	return buffer
-		.map(binary => String.fromCharCode(binary))
-		.join("")
+function toDataURI(file) {
+	return URL.createObjectURL(file)
 }
 
 function capitalizeFirstChars(value) {
@@ -41,7 +39,6 @@ function validateFile(dataTransfer) {
 
 function fileDropForUpload(event, element) {
 	event.preventDefault()
-	console.log(event)
 	if (validateFile(event.dataTransfer)) {
 		document.getElementById("upload-audio-file-input").files = event.dataTransfer.files
 	}
@@ -57,7 +54,7 @@ function uploadPage(event) {
 
 function fillUploadForm(file) {
 	new jsmediatags.Reader(file).read({
-		onSuccess: metadata => {
+		onSuccess: async metadata => {
 			const { title, artist, picture } = metadata.tags
 
 			uploadFormat.value = file.name.split(".").at(-1)
@@ -69,9 +66,17 @@ function fillUploadForm(file) {
 			if (artist) {
 				uploadSinger.value = capitalizeFirstChars(artist.trim().slice(0, 50))
 			}
-
 			if (picture) {
-				uploadPictureGraphic.src = `data:${picture.format};charset:utf-8;base64,${btoa(toBase64String(picture.data))}`
+				const dt = new DataTransfer()
+				dt.items.add(new File(
+					[new Uint8Array(picture.data)],
+					`cover.${picture.format.split("/")[1]}`,
+					{
+						type : picture.format
+					}
+				))
+				uploadPicture.files = dt.files
+				uploadPictureGraphic.src = toDataURI(uploadPicture.files[0])
 			} else {
 				uploadPictureGraphic.src = "./images/music.svg"
 			}

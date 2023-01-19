@@ -1,3 +1,5 @@
+const { rename } = require("fs/promises")
+
 const allowedAudioFormats = [
 	'mp3', 'mpeg', 'opus', 'ogg', 'oga', 'wav', 'aac', 'caf', 'm4a', 'mp4','weba', 'webm', 'dolby', 'flac'
 ]
@@ -5,7 +7,7 @@ const allowedAudioFormats = [
 async function manipulateAudioMetadata(database, audioID, updatedData) {
 	// Finding table columns that the client is allowed to manipulate
 	if (typeof allowedFields === "undefined") {
-		global.allowedFields = (await database.query(`SHOW COLUMNS FROM Audios;`, [audioID]))[0]
+		global.allowedFields = (await database.query(`SHOW COLUMNS FROM Audios;`))[0]
 			.map(field => field.Field)
 			.filter(item => !(["ID", "Owner_ID"].includes(item)))
 	}
@@ -52,8 +54,14 @@ function registerAudioToDB(database, audioID, ownerID, metadata) {
 }
 
 function registerAudio(req, res, database) {
-	if (!req.file) res.status(400).end("No Audio was Sent")
-	registerAudioToDB(database, req.file.filename, req.user.ID, req.body).then(
+	if (!req.files.audio?.[0]) res.status(400).end("No Audio was Sent")
+	if (req.files.cover?.[0]) {
+		rename(
+			"./audio covers/" + req.files.cover[0].filename,
+			`./audio covers/${req.files.audio[0].filename}.${req.files.cover[0].mimetype.split("/").at(-1)}`
+		)
+	}
+	registerAudioToDB(database, req.files.audio[0].filename, req.user.ID, req.body).then(
 		ID => {
 			res.status(201)
 			if (req.query.returnAudioID) {

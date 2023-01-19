@@ -5,6 +5,7 @@ const timeline = document.querySelector("#timeline > input[type=range]")
 const timelineEnd = document.querySelector("#timeline > :nth-child(3)")
 const timelineState = document.querySelector("#timeline > :nth-child(1)")
 const pausePlayButton = document.querySelector("#controller button:nth-child(2) > img")
+const playingAudioCover = document.querySelector("#music-control > img")
 // Difference between audio start read position (player.seek()) and the timeline
 let timelineDifference = 0
 // ID of the set interval that updates the timeline's state every second
@@ -38,7 +39,6 @@ function playAudio (audioId, start) {
 		window["player"] = new Howl({
 			src : [``],
 			html5: true,
-			format: "mp3"
 		})
 		player.on("end", () => {pause(); player.seek(0)})
 	}
@@ -64,6 +64,7 @@ function resume() {
 }
 // This function is called by every item in the browser
 function browserItemClick(element) {
+	playingAudioCover.src = `/api/v1/audio/${element.getAttribute("data-audio-id")}?query=Cover`
 	playAudio(element.getAttribute("data-audio-id"))
 }
 // Refreshes the browser items
@@ -76,7 +77,10 @@ async function refresh() {
 		browser.innerHTML += `
 		<button class="browser-item" data-item-type="audio" data-audio-id="${audio}" onclick='browserItemClick(this)'
 			type="button" title="${title || "No title"}${singer ? ` by ${singer}` : ""}">
-			<div></div>
+			<div
+				style="--background : url('/api/v1/audio/${audio}?query=Cover')"
+				onerror="this.src = 'web/images/music.svg', this.onerror = undefined"
+			></div>
 			<span title="${title}">${title}</span>
 			<span title="${singer}">${singer}</span>
 		</button>\n

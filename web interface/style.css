@@ -220,12 +220,12 @@ h1 {
 	width: 100%;
 	border-radius: .5rem;
 	aspect-ratio: 1/1;
-	background: url(./images/music.svg);
+	background: var(--background), url(./images/music.svg);
 	background-size: cover;
 	transition: 0.25s;
 }
 .browser-item > div:hover {
-	background: url(./images/play-banner.svg) no-repeat, url(./images/music.svg);
+	background: url(./images/play-banner.svg) no-repeat, var(--background), url(./images/music.svg);
 	background-size: cover;
 	cursor: pointer;
 }
@@ -234,6 +234,7 @@ h1 {
 	white-space: nowrap;
 	overflow: hidden;
 	width: 10rem;
+	height: 1.5rem;
 	display: block;
 	margin: auto;
 	color: var(--dark-gray);

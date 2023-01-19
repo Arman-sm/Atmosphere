@@ -6,11 +6,8 @@ function hash(text) {
 }
 
 function authenticate(req, res, next) {
-	let token = req.cookies.authorization
-	if (req.headers.authorization) {
-		token = req.headers.authorization
-	}
-	if (token && token.startsWith("Bearer ")) {
+	let token = req.headers.authorization ?? req.cookies.authorization
+	if (token?.startsWith("Bearer ")) {
 		try {
 			req.user = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET)
 			return next()

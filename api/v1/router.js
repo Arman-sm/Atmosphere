@@ -3,7 +3,15 @@ const { authenticate, sendToken, sentRegisterUserToken, setRegisterAuthorization
 const { returnUserID } = require("./view/user")
 const { registerAudio, updateAudioData } = require("./controller.js")
 const express = require("express")
-const multer = require("multer")({ dest : "./audios" })
+const multerLib = require("multer")
+const multer = multerLib({
+	storage : multerLib.diskStorage({
+		destination : (req, file, cb) => {
+			if (file.fieldname === "audio") return cb(null, "./audios")
+			cb(null, "./audio covers/")
+		}
+	})
+})
 const router = express.Router()
 const mysql = require("mysql2")
 
@@ -37,7 +45,10 @@ function passDB(func) {
 	return (req, res) => func(req, res, database)
 }
 
-router.route("/audio").post(multer.single("audioFile"), passDB(registerAudio))
+router.route("/audio").post(
+	multer.fields([{name : "audio", maxCount : 1}, {name : "cover", maxCount : 1}]),
+	passDB(registerAudio)
+)
 router.route("/audio/:Audio_ID").get(passDB(queryAudio)).patch(passDB(updateAudioData))
 
 router.get("/audios", passDB(returnAudios))
