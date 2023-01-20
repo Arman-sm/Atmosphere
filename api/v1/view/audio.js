@@ -1,7 +1,6 @@
-const { dirxml } = require("console")
-const { response } = require("express")
 const { createReadStream } = require("fs")
-const { stat, readFile, opendir, readdir } = require("fs/promises")
+const { stat, opendir } = require("fs/promises")
+const { removeAudio } = require("../controller/audio")
 const { getAudioDurationInSeconds } = require("get-audio-duration")
 
 async function extensionCarelessFileSearch(dirname, filename) {
@@ -14,7 +13,6 @@ async function extensionCarelessFileSearch(dirname, filename) {
 		reject()
 	})
 }
-
 
 function returnAudios(req, res, database) {
 	database.query(`SELECT ID FROM Audios WHERE Owner_ID = ?;`, [req.user.ID]).then(
@@ -49,13 +47,25 @@ async function returnCover(req, res, AudioID) {
 }
 
 // Pipes the music to the client from the specified start in seconds
-async function pipeMusic(path, res, start) {
-	if (!start) { start = 0 }
-	const { size } = await stat(path)
-	start = Math.floor(start * (size / Math.floor(await getAudioDurationInSeconds(path))))
-	if (isNaN(start)) {
-		start = 0
+async function pipeAudio(req, res, database) {
+	const path = "./audios/" + req.params.Audio_ID
+	let start = Number(req.query.start) || 0
+	
+	try {
+		var { size } = await stat(path)
+	} catch (err) {
+		if (err.code === "ENOENT") {
+			res.status(404).end("audio file was not found")
+			removeAudio(req.params.Audio_ID, database)
+			return
+		}
+		console.error(err)
+		return
 	}
+	start = Math.floor(start * (size / Math.floor(await getAudioDurationInSeconds(path))))
+	
+	if (isNaN(start)) start = 0
+
 	if (start >= size) {
 		return res.status(400).end("Start is more than audio's length")
 	}
@@ -72,7 +82,6 @@ async function pipeMusic(path, res, start) {
 	fileStream.on("error", (err) => {
 		res.status(500).end("Internal Error")
 		console.error(err)
-		console.log(0)
 		reject(err)
 	})
 	})
@@ -93,16 +102,20 @@ async function queryAudio(req, res, database) {
 		)
 		// Checking if there are audios with the specified audio id
 		if (results.length == 0) { return res.status(404).end("Audio Not Found") }
-		// Options for querying different info about an audio
 		res.status(200)
-	
-		// Piping the file if no query is specified
-		if (!req.query["query"]) { return await pipeMusic(`./audios/${Audio_ID}`, res, Number(req.query["start"])) }
 		
+		// Piping the file if no query is specified
+		if (!req.query["query"]) { return await pipeAudio(req, res, database) }
+		
+		// Options for querying different info about an audio
 		switch (req.query["query"]) {
 			// Duration of the selected audio in seconds
 			case "Duration":
-				return res.end(String(await getAudioDurationInSeconds(`./audios/${Audio_ID}`)))
+				try {
+					return res.end(String(await getAudioDurationInSeconds(`./audios/${Audio_ID}`)))
+				} catch (err) {
+					return res.status(500).end("0")
+				}
 			case "Picture":
 			case "Cover":
 				try {	

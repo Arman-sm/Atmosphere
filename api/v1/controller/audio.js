@@ -1,8 +1,19 @@
-const { rename } = require("fs/promises")
+const { rename, rm } = require("fs/promises")
 
 const allowedAudioFormats = [
 	'mp3', 'mpeg', 'opus', 'ogg', 'oga', 'wav', 'aac', 'caf', 'm4a', 'mp4','weba', 'webm', 'dolby', 'flac'
 ]
+
+async function removeAudio(audioID, database) {
+	rm("./audios/" + audioID).catch(() => {})
+	try {
+		while (true) {
+			await rm(await extensionCarelessFileSearch("./audio covers/", audioID))
+		}
+	} catch {}
+	
+	database.query("DELETE FROM Audios WHERE ID = ?", [audioID])
+}
 
 async function manipulateAudioMetadata(database, audioID, updatedData) {
 	// Finding table columns that the client is allowed to manipulate
@@ -33,7 +44,12 @@ async function manipulateAudioMetadata(database, audioID, updatedData) {
 }
 
 function updateAudioData(req, res, database) {
-	if (!req.params["Audio_ID"]) { res.status(400).end("Audio ID Not Specified") }
+	if (!req.params.Audio_ID) { res.status(400).end("Audio ID Not Specified") }
+
+	if (req.files?.cover) {
+		rename
+	}
+
 	manipulateAudioMetadata(database, req.params["Audio_ID"], req.body).then(
 		() => res.status(200).end(),
 		err => res.end(400).end()
@@ -73,4 +89,4 @@ function registerAudio(req, res, database) {
 	)
 }
 
-module.exports = { registerAudio, updateAudioData }
+module.exports = { registerAudio, updateAudioData, removeAudio }
