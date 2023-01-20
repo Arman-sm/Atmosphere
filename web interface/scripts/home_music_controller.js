@@ -71,7 +71,7 @@ function browserItemClick(element) {
 async function refresh() {
 	const audios = await fetch("/api/v1/audios").then(response => response.json()).then(json => json)
 	browser.innerHTML = ""
-	for (audio of audios) {
+	for (const audio of audios) {
 		const title = await queryAudioMetadata(audio, "Title")
 		const singer = await queryAudioMetadata(audio, "Singer")
 		browser.innerHTML += `

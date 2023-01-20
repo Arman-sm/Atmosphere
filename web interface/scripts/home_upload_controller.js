@@ -78,7 +78,7 @@ function fillUploadForm(file) {
 				uploadPicture.files = dt.files
 				uploadPictureGraphic.src = toDataURI(uploadPicture.files[0])
 			} else {
-				uploadPictureGraphic.src = "./images/music.svg"
+				uploadPictureGraphic.src = "/web/images/music.svg"
 			}
 		}
 	})

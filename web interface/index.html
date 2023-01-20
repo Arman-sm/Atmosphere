@@ -46,8 +46,10 @@
 	<!-- 2nd page -->
 	<div id="sound-info" class="invisible">
 		<input type="file" id="upload-picture" name="cover" class="invisible"
-			onchange="uploadPictureGraphic.src = await toDataURI(uploadPicture.files[0])"/>
-		<img src="/web/images/music.svg" id="upload-picture-graphic"/>
+			onchange="uploadPictureGraphic.src = toDataURI(uploadPicture.files[0])"/>
+		<img src="/web/images/music.svg" id="upload-picture-graphic"
+			onclick="uploadPicture.click()" style="cursor: pointer;"
+		/>
 		<div>
 			<input type="text" id="upload-title" name="Title" maxlength="50" placeholder="Title" class="no-max-width"/>
 			<input type="text" id="upload-singer" name="Singer" maxlength="50" placeholder="Singer"class="no-max-width"/>
