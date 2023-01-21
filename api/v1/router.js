@@ -29,6 +29,13 @@ let database = mysql.createConnection(databaseOptions)
 database.connect(err => {if (err) throw err})
 database = database.promise()
 
+async function verifyAudio(req, res, next) {
+	if ((await database.query("SELECT * FROM Audios WHERE ID = ? AND Owner_ID = ?", [req.params.Audio_ID, req.user.ID]))[0].length){
+		return next()
+	}
+	res.status(400).end("Audio Not Found")
+}
+
 console.log("Connected to the database at localhost on port 3306")
 
 router.post("/token/cookie", passDB(setAuthorizationCookie))
@@ -52,7 +59,10 @@ router.route("/audio").post(
 router.route("/audio/:Audio_ID")
 	.get(passDB(queryAudio))
 	.patch(passDB(updateAudioData))
-	.delete((req, res) => {removeAudio(req.params.Audio_ID, database); res.status(200).end()})
+	.delete(verifyAudio, (req, res) => {
+		removeAudio(req.params.Audio_ID, database)
+		res.status(200).end()
+	})
 
 router.get("/audios", passDB(returnAudios))
 

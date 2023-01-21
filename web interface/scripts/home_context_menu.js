@@ -18,8 +18,9 @@ function showMenu(top, left, audioID, borderRadius, height, width) {
 }
 
 function showFloatingMenuOnContext(event) {
+	if (event.ctrlKey) return
 	event.preventDefault()
-	showMenu(event.clientY, event.clientX, event.target.getAttribute("data-audio-id"), "0.75rem", "auto", "auto")
+	showMenu(event.clientY, event.clientX, event.target.getAttribute("data-audio-id") || event.target.parentElement.getAttribute("data-audio-id"), "0.75rem", "auto", "auto")
 }
 
 function showContextOnElement(element) {

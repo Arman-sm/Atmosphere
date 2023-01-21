@@ -70,6 +70,7 @@ function browserItemClick(element) {
 // Refreshes the browser items
 async function refresh() {
 	const audios = await fetch("/api/v1/audios").then(response => response.json()).then(json => json)
+	console.log(audios)
 	browser.innerHTML = ""
 	for (const audio of audios) {
 		const title = await queryAudioMetadata(audio, "Title")
@@ -77,7 +78,7 @@ async function refresh() {
 		browser.innerHTML += `
 		<button class="browser-item" data-item-type="audio" data-audio-id="${audio}" onclick='browserItemClick(this)'
 			type="button" title="${title || "No title"}${singer ? ` by ${singer}` : ""}"
-			oncontextmenu="showFloatingMenuOnContext(event); return false"
+			oncontextmenu="return showFloatingMenuOnContext(event);"
 		>
 			<div
 				style="--background : url('/api/v1/audio/${audio}?query=Cover')"

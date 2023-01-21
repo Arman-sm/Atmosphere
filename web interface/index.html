@@ -17,7 +17,8 @@
 <body>
 <div id="container">
 <div id="context-menu" class="invisible">
-	<button type="button">
+	<button type="button"
+		onmouseup="fetch('/api/v1/audio/' + this.parentElement.getAttribute('data-audio-id'), {method: 'DELETE'}).then(refresh)">
 		<img src="/web/images/garbage-can.svg"/>
 		<span>Delete</span>
 	</button>
