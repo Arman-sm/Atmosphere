@@ -8,6 +8,9 @@ h1 {
 	color: var(--black);
 	margin: auto auto 5vh auto;
 }
+a {
+	margin: 0 auto auto auto;
+}
 .input {
 	margin: 0 auto;
 	max-width: 75% !important;

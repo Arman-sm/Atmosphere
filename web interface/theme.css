@@ -96,9 +96,37 @@
 	--white : hsl(180, 10%, 15%);
 	--green : hsl(180, 10%, 25%)
 }
+#context-menu {
+	backdrop-filter: blur(20px) brightness(80%);
+	display: flex;
+	z-index: 5;
+	flex-direction: column;
+	position: absolute;
+	box-sizing: border-box;
+	gap: .25rem;
+	border: .25rem;
+	padding: .25rem;
+	border-radius: .75rem;
+}
+#context-menu > button {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	box-sizing: border-box;
+	padding: .5rem;
+	background-color: rgba(0, 0, 0, 40%);
+	color: hsla(0, 0%, 100%, 70%);
+	box-shadow: none;
+	gap: .5rem;
+}
+#context-menu > button > img {
+	aspect-ratio: 1/1;
+	height: 1.5rem;
+}
 body {
 	accent-color: var(--lime);
 	font-family: poppins, vazir;
+	overflow: hidden;
 }
 button { -webkit-tap-highlight-color: transparent; }
 input[type = text], input[type = password] {
@@ -169,7 +197,6 @@ input[type = range]::-moz-range-thumb {
 	background: var(--lime);
 }
 a {
-	margin: 0 auto auto auto;
 	color: var(--green);
 	font-family: poppins, vazir; font-size: 15px;
 }

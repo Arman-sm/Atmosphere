@@ -9,12 +9,35 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="/web/scripts/Howler.js" defer></script>
 	<script src="/web/scripts/home_music_controller.js" defer></script>
+	<script src="/web/scripts/home_context_menu.js" defer></script>
 	<script src="/web/scripts/home_user_customization.js" defer></script>
 	<script src="/web/scripts/home_upload_controller.js" defer></script>
 	<script src="/web/scripts/jsmediatags.min.js" defer></script>
 </head>
 <body>
 <div id="container">
+<div id="context-menu" class="invisible">
+	<button type="button">
+		<img src="/web/images/garbage-can.svg"/>
+		<span>Delete</span>
+	</button>
+	<button type="button">
+		<img src="/web/images/garbage-can.svg"/>
+		<span>Delete Cover</span>
+	</button>
+	<button type="button">
+		<img src="/web/images/garbage-can.svg"/>
+		<span>Delete Title</span>
+	</button>
+	<button type="button">
+		<img src="/web/images/garbage-can.svg"/>
+		<span>Delete Singer</span>
+	</button>
+	<button type="button">
+		<img src="/web/images/pen.svg"/>
+		<span>Edit</span>
+	</button>
+</div>
 <!-- #region upload modal -->
 <div id="upload-background" class="invisible"
 	onclick="if (event.target == this) { this.classList.toggle('invisible', true); }">
@@ -62,6 +85,9 @@
 	</button>
 	</form>
 	<!-- #endregion -->
+</div>
+<div style="position: fixed; top: 0; left: 0;">
+
 </div>
 <!-- #endregion -->
 <div id="quick-access">

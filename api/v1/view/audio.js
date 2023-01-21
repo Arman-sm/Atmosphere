@@ -24,9 +24,9 @@ function returnAudios(req, res, database) {
 async function returnCover(req, res, AudioID) {
 	if (AudioID.includes("/")) return res.status(400).end("Invalid Audio ID")
 	return new Promise((resolve, reject) => {
-		extensionCarelessFileSearch("./audio covers/", AudioID).then(
+		extensionCarelessFileSearch("./audio/covers/", AudioID).then(
 			file => {
-				res.status(200).sendFile("./audio covers/" + file.name,
+				res.status(200).sendFile("./audio/covers/" + file.name,
 					{
 						root : process.cwd()
 					},
@@ -48,7 +48,7 @@ async function returnCover(req, res, AudioID) {
 
 // Pipes the music to the client from the specified start in seconds
 async function pipeAudio(req, res, database) {
-	const path = "./audios/" + req.params.Audio_ID
+	const path = "./audio/audios/" + req.params.Audio_ID
 	let start = Number(req.query.start) || 0
 	
 	try {
@@ -112,7 +112,7 @@ async function queryAudio(req, res, database) {
 			// Duration of the selected audio in seconds
 			case "Duration":
 				try {
-					return res.end(String(await getAudioDurationInSeconds(`./audios/${Audio_ID}`)))
+					return res.end(String(await getAudioDurationInSeconds(`./audio/audios/${Audio_ID}`)))
 				} catch (err) {
 					return res.status(500).end("0")
 				}

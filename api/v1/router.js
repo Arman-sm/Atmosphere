@@ -7,8 +7,8 @@ const multerLib = require("multer")
 const multer = multerLib({
 	storage : multerLib.diskStorage({
 		destination : (req, file, cb) => {
-			if (file.fieldname === "audio") return cb(null, "./audios")
-			cb(null, "./audio covers/")
+			if (file.fieldname === "audio") return cb(null, "./audio/audios")
+			cb(null, "./audio/covers/")
 		}
 	})
 })

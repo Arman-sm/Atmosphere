@@ -76,7 +76,9 @@ async function refresh() {
 		const singer = await queryAudioMetadata(audio, "Singer")
 		browser.innerHTML += `
 		<button class="browser-item" data-item-type="audio" data-audio-id="${audio}" onclick='browserItemClick(this)'
-			type="button" title="${title || "No title"}${singer ? ` by ${singer}` : ""}">
+			type="button" title="${title || "No title"}${singer ? ` by ${singer}` : ""}"
+			oncontextmenu="showFloatingMenuOnContext(event); return false"
+		>
 			<div
 				style="--background : url('/api/v1/audio/${audio}?query=Cover')"
 				onerror="this.src = 'web/images/music.svg', this.onerror = undefined"

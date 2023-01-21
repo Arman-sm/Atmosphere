@@ -37,7 +37,7 @@ function validateFile(dataTransfer) {
 	return true
 }
 
-function fileDropForUpload(event, element) {
+function fileDropForUpload(event) {
 	event.preventDefault()
 	if (validateFile(event.dataTransfer)) {
 		document.getElementById("upload-audio-file-input").files = event.dataTransfer.files

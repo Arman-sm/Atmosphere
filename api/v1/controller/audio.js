@@ -5,10 +5,10 @@ const allowedAudioFormats = [
 ]
 
 async function removeAudio(audioID, database) {
-	rm("./audios/" + audioID).catch(() => {})
+	rm("./audio/audios/" + audioID).catch(() => {})
 	try {
 		while (true) {
-			await rm(await extensionCarelessFileSearch("./audio covers/", audioID))
+			await rm(await extensionCarelessFileSearch("./audio/covers/", audioID))
 		}
 	} catch {}
 	
@@ -73,8 +73,8 @@ function registerAudio(req, res, database) {
 	if (!req.files.audio?.[0]) res.status(400).end("No Audio was Sent")
 	if (req.files.cover?.[0]) {
 		rename(
-			"./audio covers/" + req.files.cover[0].filename,
-			`./audio covers/${req.files.audio[0].filename}.${req.files.cover[0].mimetype.split("/").at(-1)}`
+			"./audio/covers/" + req.files.cover[0].filename,
+			`./audio/covers/${req.files.audio[0].filename}.${req.files.cover[0].mimetype.split("/").at(-1)}`
 		)
 	}
 	registerAudioToDB(database, req.files.audio[0].filename, req.user.ID, req.body).then(
