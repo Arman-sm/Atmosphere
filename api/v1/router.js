@@ -1,7 +1,7 @@
 const { queryAudio, returnAudios } = require("./view/audio.js")
 const { authenticate, sendToken, sentRegisterUserToken, setRegisterAuthorizationCookie, setAuthorizationCookie } = require("./authentication")
 const { returnUserID } = require("./view/user")
-const { registerAudio, updateAudioData, removeAudio } = require("./controller/audio.js")
+const { registerAudio, updateAudioData, removeAudio, removeAudioCover } = require("./controller/audio.js")
 const express = require("express")
 const multerLib = require("multer")
 const multer = multerLib({
@@ -65,6 +65,11 @@ router.route("/audio/:Audio_ID")
 	})
 
 router.get("/audios", passDB(returnAudios))
+
+router.delete("/cover/audio/:Audio_ID", verifyAudio, (req, res) => {
+	removeAudioCover(req.params.Audio_ID)
+	res.status(200).end()
+})
 
 router.all("*", (req, res) => {
 	res.status(404).end("Not Found")

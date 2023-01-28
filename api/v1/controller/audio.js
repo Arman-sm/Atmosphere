@@ -1,17 +1,31 @@
-const { rename, rm } = require("fs/promises")
+const { rename, rm, opendir } = require("fs/promises")
 
 const allowedAudioFormats = [
 	'mp3', 'mpeg', 'opus', 'ogg', 'oga', 'wav', 'aac', 'caf', 'm4a', 'mp4','weba', 'webm', 'dolby', 'flac'
 ]
 
+async function extensionCarelessFileSearch(dirname, filename) {
+	for await (const file of await opendir(dirname)) {
+		if (file.name.slice(0, file.name.lastIndexOf(".")) === filename) {
+			return file
+		}
+	}
+	return
+}
+
+async function removeAudioCover(audioID) {
+	while (true) {
+		const file = await extensionCarelessFileSearch("./audio/covers", audioID)
+		if (file == undefined) break
+		await rm("./audio/covers/" + file.name)
+	}
+	return
+}
+
 async function removeAudio(audioID, database) {
 	rm("./audio/audios/" + audioID).catch(() => {})
-	try {
-		while (true) {
-			await rm(await extensionCarelessFileSearch("./audio/covers/", audioID))
-		}
-	} catch {}
-	
+	removeAudioCover(audioID)
+
 	database.query("DELETE FROM Audios WHERE ID = ?", [audioID])
 }
 
@@ -27,7 +41,7 @@ async function manipulateAudioMetadata(database, audioID, updatedData) {
 		// Applying changes to the database where possible
 		for (property in updatedData) {
 			if (property === "Format" && !allowedAudioFormats.includes(updatedData[property].toLowerCase())) {
-				if (updatedData[property] == '') continue
+				if (!updatedData[property]) continue
 				reject("Audio Format is Not Supported")
 			}
 			if (allowedFields.includes(property) && updatedData[property]) {
@@ -89,4 +103,4 @@ function registerAudio(req, res, database) {
 	)
 }
 
-module.exports = { registerAudio, updateAudioData, removeAudio }
+module.exports = { registerAudio, updateAudioData, removeAudio, removeAudioCover }
