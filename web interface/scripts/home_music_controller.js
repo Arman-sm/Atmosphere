@@ -81,7 +81,6 @@ async function refresh(path = "") {
 		>
 			<div
 				style="--background : url('/api/v1/audio/${audioID}?query=Cover')"
-				onerror="this.src = 'web/images/music.svg', this.onerror = undefined"
 			></div>
 			<span title="${title}">${title}</span>
 			<span title="${singer}">${singer}</span>
@@ -96,9 +95,11 @@ async function refresh(path = "") {
 			oncontextmenu="return showFloatingMenuOnContext(event);"
 		>
 			<div
-				style="--background : url('/api/v1/audio/${containerID}?query=Cover')"
-				onerror="this.src = 'web/images/music.svg', this.onerror = undefined"
+				style="--background : url('/web/images/container.sv'); float: left;"
 			></div>
+			<img src="/web/images/container.svg"
+				style="width: 2.5rem; aspect-ratio: 1/1; margin-left: calc(-2.5rem - .5rem); clear: right; position: relative; margin-top: .25rem"
+			/>
 			<span title="${title}">${title}</span>
 			<span></span>
 		</button>\n

@@ -215,17 +215,32 @@ h1 {
 		filter: brightness(90%);
 	}
 }
+.browser-item[data-item-type="audio"] > div{
+	background: var(--background), url(./images/music.svg);
+	background-size: cover;
+}
+.browser-item[data-item-type=container] > div {
+	background: var(--background), url(./images/container-big.svg);
+	background-size: cover;
+}
 .browser-item > div {
-	margin-bottom: 0.4rem;
+	margin-bottom: .4rem;
 	width: 100%;
 	border-radius: .5rem;
 	aspect-ratio: 1/1;
-	background: var(--background), url(./images/music.svg);
+	background-position: center !important;
 	background-size: cover;
 	transition: 0.25s;
 }
-.browser-item > div:hover {
+.browser-item[data-item-type="audio"] > div:hover {
 	background: url(./images/play-banner.svg) no-repeat, var(--background), url(./images/music.svg);
+	background-size: cover;
+}
+.browser-item[data-item-type=container] > div:hover {
+	background: url(./images/play-banner.svg) no-repeat, var(--background), url(./images/container-big.svg);
+	background-size: cover;
+}
+.browser-item > div:hover {
 	background-size: cover;
 	cursor: pointer;
 }
@@ -256,6 +271,7 @@ h1 {
 }
 #music-control > img {
 	height: 100%;
+	object-fit:cover;
 	aspect-ratio: 1/1;
 	border-radius: 5px;
 }
