@@ -95,9 +95,9 @@ async function queryAudio(req, res, database) {
 	const { Audio_ID } = req.params
 	if (!Audio_ID) { return res.status(404).end("Audio ID Not Specified") }
 	try {
-		// Selecting the audio by the audio id provided
+		// Selecting the audio with the audio id provided
 		const [results,] = await database.query(
-			`SELECT * FROM Audios WHERE Audios.ID = ? AND Owner_ID = ?;`,
+			`SELECT * FROM Audios WHERE ID = ? AND Owner_ID = ?;`,
 			[Audio_ID, req.user.ID]
 		)
 		// Checking if there are audios with the specified audio id
@@ -114,7 +114,7 @@ async function queryAudio(req, res, database) {
 				try {
 					return res.end(String(await getAudioDurationInSeconds(`./audio/audios/${Audio_ID}`)))
 				} catch (err) {
-					return res.status(500).end("0")
+					res.status(500).end("0")
 				}
 			case "Picture":
 			case "Cover":
@@ -127,8 +127,9 @@ async function queryAudio(req, res, database) {
 				if (allowedFields.includes(req.query["query"])) {
 					return res.status(200).end(results[0][req.query["query"]])
 				}
-				return res.status(400).end("Invalid Query")
+				res.status(400).end("Invalid Query")
 		}
+		return
 	} catch (err) { console.error(err); res.status(500).end("Internal Error"); }
 }
 

@@ -64,28 +64,43 @@ function resume() {
 }
 // This function is called by every item in the browser
 function browserItemClick(element) {
-	playingAudioCover.src = `/api/v1/audio/${element.getAttribute("data-audio-id")}?query=Cover`
-	playAudio(element.getAttribute("data-audio-id"))
+	playingAudioCover.src = `/api/v1/audio/${element.getAttribute("data-id")}?query=Cover`
+	playAudio(element.getAttribute("data-id"))
 }
 // Refreshes the browser items
-async function refresh() {
-	const audios = await fetch("/api/v1/audios").then(response => response.json()).then(json => json)
-	console.log(audios)
+async function refresh(path = "") {
+	const {containers: containerIDs, audios: audioIDs} = await fetch("/api/v1/view/" + path).then(response => response.json()).then(json => json)
 	browser.innerHTML = ""
-	for (const audio of audios) {
-		const title = await queryAudioMetadata(audio, "Title")
-		const singer = await queryAudioMetadata(audio, "Singer")
+	for (const audioID of audioIDs) {
+		const title = await queryAudioMetadata(audioID, "Title")
+		const singer = await queryAudioMetadata(audioID, "Singer")
 		browser.innerHTML += `
-		<button class="browser-item" data-item-type="audio" data-audio-id="${audio}" onclick='browserItemClick(this)'
+		<button class="browser-item" data-item-type="audio" data-id="${audioID}" onclick='browserItemClick(this)'
 			type="button" title="${title || "No title"}${singer ? ` by ${singer}` : ""}"
 			oncontextmenu="return showFloatingMenuOnContext(event);"
 		>
 			<div
-				style="--background : url('/api/v1/audio/${audio}?query=Cover')"
+				style="--background : url('/api/v1/audio/${audioID}?query=Cover')"
 				onerror="this.src = 'web/images/music.svg', this.onerror = undefined"
 			></div>
 			<span title="${title}">${title}</span>
 			<span title="${singer}">${singer}</span>
+		</button>\n
+		`
+	};
+	for (const containerID of containerIDs) {
+		const title = await queryContainerMetadata(containerID, "Title")
+		browser.innerHTML += `
+		<button class="browser-item" data-item-type="container" data-id="${containerID}}" onclick='browserItemClick(this)'
+			type="button" title="${title || "No title"}"
+			oncontextmenu="return showFloatingMenuOnContext(event);"
+		>
+			<div
+				style="--background : url('/api/v1/audio/${containerID}?query=Cover')"
+				onerror="this.src = 'web/images/music.svg', this.onerror = undefined"
+			></div>
+			<span title="${title}">${title}</span>
+			<span></span>
 		</button>\n
 		`
 	};
@@ -95,4 +110,8 @@ refresh()
 
 function queryAudioMetadata(audioID, query) {
 	return fetch(`/api/v1/audio/${audioID}?query=${query}`).then(response => response.text())
+}
+
+function queryContainerMetadata(containerID, query) {
+	return fetch(`/api/v1/container/${containerID}?query=${query}`).then(response => response.text())
 }

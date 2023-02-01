@@ -10,7 +10,7 @@ body {margin: 0;}
 	overflow: hidden;
 	display: grid;
 	grid-template-columns: 15rem 1fr;
-	grid-template-rows: 1fr 7rem;
+	grid-template-rows: 1fr 6rem;
 	grid-template-areas: 'quick-access browser' 'music-control music-control';
 }
 button {
@@ -250,14 +250,12 @@ h1 {
 #music-control {
 	grid-area: music-control;
 	background-color: var(--white);
-	/* width: 100vw; height: 100px; */
-	clear: both;
+	padding: .75rem;
 	display: flex;
 	align-items: center;
 }
 #music-control > img {
-	height: 80%;
-	margin-left: 10px;
+	height: 100%;
 	aspect-ratio: 1/1;
 	border-radius: 5px;
 }

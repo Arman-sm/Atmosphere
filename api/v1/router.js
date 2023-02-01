@@ -1,4 +1,5 @@
 const { queryAudio, returnAudios } = require("./view/audio.js")
+const { containerView, rootView, queryContainer } = require("./controller/container")
 const { authenticate, sendToken, sentRegisterUserToken, setRegisterAuthorizationCookie, setAuthorizationCookie } = require("./authentication")
 const { returnUserID } = require("./view/user")
 const { registerAudio, updateAudioData, removeAudio, removeAudioCover } = require("./controller/audio.js")
@@ -65,6 +66,11 @@ router.route("/audio/:Audio_ID")
 	})
 
 router.get("/audios", passDB(returnAudios))
+
+router.get("/container/:Container_ID", passDB(queryContainer))
+
+router.get("/view/", passDB(rootView))
+router.get("/view/:Container_ID", passDB(containerView))
 
 router.delete("/cover/audio/:Audio_ID", verifyAudio, (req, res) => {
 	removeAudioCover(req.params.Audio_ID)
