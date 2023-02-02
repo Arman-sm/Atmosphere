@@ -2,7 +2,26 @@
 A node.js server for storing audios that also has a web interface
 
 For API's documentation please check out the wiki.
-
+## Ideas
+1. Lyrics support, something like musixmatch's. ( In research and development )
+2. Live music broadcast or even voice call.
+3. Utility APIs and tools in the interface.
+4. Lyrics generator.
+5. Custom key value pair data for developers to attach to audios or containers for use in other applications.
+6. Sharing containers and audios between users.
+7. Audio effect tool.
+8. PWA App.
+9. More verbose commands for reducing request frequency.
+## In progress
+### Containers
+- [ ] API
+  - [x] View
+  - [ ] Edit
+  - [ ] Delete
+- [ ] Web Interface
+  - [x] View
+  - [ ] Edit
+  - [ ] Delete
 ## Setup
 ### Requirements
 - MySQL version 8
