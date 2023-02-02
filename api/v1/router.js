@@ -1,10 +1,11 @@
 const { queryAudio, returnAudios } = require("./view/audio.js")
-const { containerView, rootView, queryContainer } = require("./controller/container")
+const { containerView, rootView, queryContainer } = require("./view/container")
 const { authenticate, sendToken, sentRegisterUserToken, setRegisterAuthorizationCookie, setAuthorizationCookie } = require("./authentication")
 const { returnUserID } = require("./view/user")
 const { registerAudio, updateAudioData, removeAudio, removeAudioCover } = require("./controller/audio.js")
 const express = require("express")
 const multerLib = require("multer")
+
 const multer = multerLib({
 	storage : multerLib.diskStorage({
 		destination : (req, file, cb) => {
@@ -13,6 +14,7 @@ const multer = multerLib({
 		}
 	})
 })
+
 const router = express.Router()
 const mysql = require("mysql2")
 

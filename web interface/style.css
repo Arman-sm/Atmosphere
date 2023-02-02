@@ -175,10 +175,33 @@ h1 {
 	font-weight: 700;
 	font-size: 2.5rem;
 	color: var(--black);
+}
+#browser > div > h1 {
 	margin-top: -1rem;
+	float: left;
+}
+#browser > div > h1:hover {
+	background-color: hsla(0, 0%, 0%, 0.3);
+	outline: .25rem solid hsla(0, 0%, 0%, 0.3);
+	cursor: pointer;
+	border-radius: .25rem;
+}
+#browser > div > h1::after {
+	content: "/";
+	padding-right: .1rem;
+	margin-left: .1rem;
+}
+#browser > div h1:first-of-type::before {
+	content: "Root";
+	color: var(--lime);
+}
+#browser > div > h1:not(:first-of-type) {
+	padding-left: .1rem;
+	margin-left: .5rem;
 }
 #browser-item-container {
 	margin: 1rem 0;
+	clear: both;
 	display: flex;
 	flex-wrap: wrap;
 	gap: 1rem;
@@ -220,6 +243,7 @@ h1 {
 	background-size: cover;
 }
 .browser-item[data-item-type=container] > div {
+	float: left;
 	background: var(--background), url(./images/container-big.svg);
 	background-size: cover;
 }
@@ -232,12 +256,26 @@ h1 {
 	background-size: cover;
 	transition: 0.25s;
 }
-.browser-item[data-item-type="audio"] > div:hover {
-	background: url(./images/play-banner.svg) no-repeat, var(--background), url(./images/music.svg);
+.browser-item > div::before {
+	border-radius: .5rem;
+	content: "";
+	float: left;
+	position: relative;
+	width: 100%;
+	aspect-ratio: 1/1;
+	z-index: 1;
+	opacity: 0%;
+	transition: opacity .25s;
+}
+.browser-item > div:hover::before {
+	opacity: 100%;
+}
+.browser-item[data-item-type="audio"] > div::before {
+	background: url(./images/play-banner.svg) no-repeat;
 	background-size: cover;
 }
-.browser-item[data-item-type=container] > div:hover {
-	background: url(./images/play-banner.svg) no-repeat, var(--background), url(./images/container-big.svg);
+.browser-item[data-item-type=container] > div::before {
+	background: url(./images/container-open-banner.svg) no-repeat;
 	background-size: cover;
 }
 .browser-item > div:hover {
@@ -252,7 +290,7 @@ h1 {
 	height: 1.5rem;
 	display: block;
 	margin: auto;
-	color: var(--dark-gray);
+	color: var(--lighter-black);
 }
 .browser-item span:first-of-type {
 	font-weight: bold;

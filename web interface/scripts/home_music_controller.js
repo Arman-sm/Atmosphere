@@ -1,11 +1,15 @@
 // The section when you van select audios
 const browser = document.getElementById("browser-item-container")
+const containerPathElement = document.querySelector("#browser :nth-child(1)")
 
 const timeline = document.querySelector("#timeline > input[type=range]")
 const timelineEnd = document.querySelector("#timeline > :nth-child(3)")
 const timelineState = document.querySelector("#timeline > :nth-child(1)")
 const pausePlayButton = document.querySelector("#controller button:nth-child(2) > img")
 const playingAudioCover = document.querySelector("#music-control > img")
+
+// [[ID, Name]]
+let containerPath = [["", ""]]
 // Difference between audio start read position (player.seek()) and the timeline
 let timelineDifference = 0
 // ID of the set interval that updates the timeline's state every second
@@ -64,16 +68,34 @@ function resume() {
 }
 // This function is called by every item in the browser
 function browserItemClick(element) {
+	if (element.getAttribute("data-item-type") == "container") {
+		containerPath.push([element.getAttribute("data-id"), element.getAttribute("data-title")])
+		return refresh(element.getAttribute("data-id"))
+	}
+
 	playingAudioCover.src = `/api/v1/audio/${element.getAttribute("data-id")}?query=Cover`
 	playAudio(element.getAttribute("data-id"))
 }
 // Refreshes the browser items
-async function refresh(path = "") {
-	const {containers: containerIDs, audios: audioIDs} = await fetch("/api/v1/view/" + path).then(response => response.json()).then(json => json)
+async function refresh(selectedContainerID = "") {
+	containerPath = containerPath.slice(0, containerPath.map(item => item[0]).indexOf(selectedContainerID) + 1)
+
+	resultContainerPath = ""
+	for (const container of containerPath) {
+		console.log(container)
+		resultContainerPath += `<h1 onclick="refresh('${container[0]}')">${container[1]}</h1>`
+	}
+
+	containerPathElement.innerHTML = resultContainerPath
+
+	const {containers: containerIDs, audios: audioIDs} = await fetch("/api/v1/view/" + selectedContainerID).then(response => response.json()).then(json => json)
+	console.log(selectedContainerID)
+	console.log(containerIDs, audioIDs)
 	browser.innerHTML = ""
 	for (const audioID of audioIDs) {
-		const title = await queryAudioMetadata(audioID, "Title")
-		const singer = await queryAudioMetadata(audioID, "Singer")
+		queryAudioMetadata(audioID, "Title").then(
+		title => queryAudioMetadata(audioID, "Singer").then(
+		singer => {
 		browser.innerHTML += `
 		<button class="browser-item" data-item-type="audio" data-id="${audioID}" onclick='browserItemClick(this)'
 			type="button" title="${title || "No title"}${singer ? ` by ${singer}` : ""}"
@@ -86,24 +108,31 @@ async function refresh(path = "") {
 			<span title="${singer}">${singer}</span>
 		</button>\n
 		`
+		}
+		)
+		)
 	};
+
 	for (const containerID of containerIDs) {
-		const title = await queryContainerMetadata(containerID, "Title")
+		queryContainerMetadata(containerID, "Title").then(
+		title => {
 		browser.innerHTML += `
-		<button class="browser-item" data-item-type="container" data-id="${containerID}}" onclick='browserItemClick(this)'
-			type="button" title="${title || "No title"}"
+		<button class="browser-item" data-item-type="container" data-id="${containerID}" onclick='browserItemClick(this)'
+			data-title="${title}" type="button" title="${title || "No title"}"
 			oncontextmenu="return showFloatingMenuOnContext(event);"
 		>
 			<div
-				style="--background : url('/web/images/container.sv'); float: left;"
+				style="--background : url('/api/v1/container/${containerID}?query=Cover'); float: left;"
 			></div>
-			<img src="/web/images/container.svg"
+			<img src="/web/images/container.svg" alt="album indicator"
 				style="width: 2.5rem; aspect-ratio: 1/1; margin-left: calc(-2.5rem - .5rem); clear: right; position: relative; margin-top: .25rem"
 			/>
 			<span title="${title}">${title}</span>
 			<span></span>
 		</button>\n
 		`
+		}
+		)
 	};
 }
 

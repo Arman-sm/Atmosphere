@@ -1,3 +1,5 @@
+const { returnCover } = require("./cover")
+
 async function rootView(req, res, database) {
 	const [containers,] = await database.query(
 		"SELECT ID FROM Containers WHERE Container_ID is NULL AND Owner_ID = ?;",
@@ -42,6 +44,15 @@ async function queryContainer(req, res, database) {
 	}
 	const { Container_ID } = req.params
 	if (!Container_ID) { return res.status(404).end("Container ID Not Specified") }
+
+	if (req.query.query === "Cover" || req.query.query === "Picture") {
+		try {
+			return await returnCover(req, res, req.params.Container_ID, "./container/covers/")
+		} catch (err) {
+			return
+		}
+	}
+
 	try {
 		// Selecting the container with the container id provided
 		const [results,] = await database.query(

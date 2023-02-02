@@ -1,48 +1,13 @@
 const { createReadStream } = require("fs")
-const { stat, opendir } = require("fs/promises")
+const { stat } = require("fs/promises")
 const { removeAudio } = require("../controller/audio")
 const { getAudioDurationInSeconds } = require("get-audio-duration")
-
-async function extensionCarelessFileSearch(dirname, filename) {
-	return new Promise(async (resolve, reject) => {
-		for await (const file of await opendir(dirname)) {
-			if (file.name.slice(0, file.name.lastIndexOf(".")) === filename) {
-				return resolve(file)
-			}
-		}
-		reject()
-	})
-}
+const { returnCover } = require("./cover")
 
 function returnAudios(req, res, database) {
 	database.query(`SELECT ID FROM Audios WHERE Owner_ID = ?;`, [req.user.ID]).then(
 		results => {res.status(200).json(results[0].map(item => item.ID)).end()},
 		err => {res.status(500).end("Internal Error"); console.error(err)}
-	)
-}
-
-async function returnCover(req, res, AudioID) {
-	if (AudioID.includes("/")) return res.status(400).end("Invalid Audio ID")
-	return new Promise((resolve, reject) => {
-		extensionCarelessFileSearch("./audio/covers/", AudioID).then(
-			file => {
-				res.status(200).sendFile("./audio/covers/" + file.name,
-					{
-						root : process.cwd()
-					},
-					err => {
-						if (err === undefined) {return resolve(true)}
-						console.error(err)
-						reject(err)
-					}
-				)
-			},
-			err => {
-				res.status(404).end("Cover Not Found")
-				reject(err)
-			}
-		)
-	}
 	)
 }
 
@@ -119,7 +84,7 @@ async function queryAudio(req, res, database) {
 			case "Picture":
 			case "Cover":
 				try {	
-					await returnCover(req, res, Audio_ID)
+					await returnCover(req, res, Audio_ID, "./audio/covers/")
 				} catch {}
 				return
 			default:
