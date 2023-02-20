@@ -2,6 +2,9 @@
 A node.js server for storing audios that also has a web interface
 
 For API's documentation please check out the wiki.
+## Screenshots
+![image](https://user-images.githubusercontent.com/82840553/220172693-c9e0083e-7983-44ad-a31b-c4f085f7927c.png)
+![image](https://user-images.githubusercontent.com/82840553/220172843-48caf7f2-a776-4695-87df-e4d8c9bca857.png)
 ## Ideas
 1. Lyrics support, something like musixmatch's. ( In research and development )
 2. Live music broadcast or even voice call.
