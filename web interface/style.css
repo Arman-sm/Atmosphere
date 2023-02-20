@@ -28,6 +28,21 @@ button {
 .active-drop > button {
 	box-shadow: none !important;
 }
+#upload-picture-graphic-overlay {
+	pointer-events: none;
+	float: left;
+	position: relative;
+	transition: opacity .25s;
+	opacity: 0;
+	z-index: 2;
+}
+#upload-picture-graphic {
+	position: absolute;
+	z-index: 1;
+}
+#upload-picture-graphic:hover ~ #upload-picture-graphic-overlay, #upload-picture-graphic-overlay:hover {
+	opacity: 100%;
+}
 #upload-background {
 	position: fixed;
 	padding: 2rem;

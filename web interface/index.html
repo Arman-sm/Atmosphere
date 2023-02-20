@@ -18,7 +18,12 @@
 <div id="container">
 <div id="context-menu" class="invisible">
 	<button type="button"
-		onmouseup="fetch('/api/v1/audio/' + this.parentElement.getAttribute('data-id'), {method: 'DELETE'}).then(refresh)">
+		onmouseup="
+		fetch(`/api/v1/${this.parentElement.getAttribute('data-item-type')}/${this.parentElement.getAttribute('data-id')}`, {
+			method: 'DELETE'
+		}
+		).then(refresh)"
+		>
 		<img src="/web/images/garbage-can.svg"/>
 		<span>Delete</span>
 	</button>
@@ -35,7 +40,8 @@
 				'Content-Type' : 'application/json'
 			},
 			body : JSON.stringify({Title:''})
-		}).then(refresh)">
+		}).then(refresh)"
+	>
 		<img src="/web/images/garbage-can.svg"/>
 		<span>Delete Title</span>
 	</button>
@@ -89,8 +95,9 @@ onclick="if (event.target == this) { this.classList.toggle('invisible', true); }
 		<input type="file" id="upload-picture" name="cover" class="invisible"
 			onchange="uploadPictureGraphic.src = toDataURI(uploadPicture.files[0])"/>
 		<img src="/web/images/music.svg" id="upload-picture-graphic"
-			onclick="uploadPicture.click()" style="cursor: pointer;"
+		onclick="uploadPicture.click()" style="cursor: pointer;"
 		/>
+		<img src="/web/images/change-cover-overlay.svg" id="upload-picture-graphic-overlay"/>
 		<div>
 			<input type="text" id="upload-title" name="Title" maxlength="50" placeholder="Title" class="no-max-width"/>
 			<input type="text" id="upload-singer" name="Singer" maxlength="50" placeholder="Singer"class="no-max-width"/>
@@ -101,8 +108,8 @@ onclick="if (event.target == this) { this.classList.toggle('invisible', true); }
 	<button id="submit-upload" type="submit" class="no-max-width invisible" onclick="uploadPage()">
 		Submit
 	</button>
-	</form>
-	<!-- #endregion -->
+</form>
+<!-- #endregion -->
 </div>
 <!-- #endregion -->
 <div id="quick-access">

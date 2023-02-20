@@ -1,12 +1,8 @@
 <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="200" height="200" fill="url(#paint0_linear_17_5)"/>
-<circle cx="70.8333" cy="124.833" r="20.8333" fill="#EDF5FC"/>
-<rect x="70.8333" y="54" width="20.8333" height="70.8333" fill="#EDF5FC"/>
-<circle cx="120.833" cy="124.833" r="20.8333" fill="#EDF5FC"/>
-<rect x="120.833" y="54" width="20.8333" height="70.8333" fill="#EDF5FC"/>
-<rect x="70.8333" y="54" width="64.5833" height="20.8333" fill="#EDF5FC"/>
+<rect width="200" height="200" fill="url(#paint0_linear_111_14)"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M74.8333 58C74.8333 55.7909 76.6242 54 78.8333 54H84H95.6667H124.833H132H141.667C143.876 54 145.667 55.7909 145.667 58V124.833C145.667 136.339 136.339 145.667 124.833 145.667C113.327 145.667 104 136.339 104 124.833C104 114.687 111.253 106.236 120.856 104.379C123.025 103.96 124.833 102.209 124.833 100V79C124.833 76.7909 123.042 75 120.833 75H99.6667C97.4575 75 95.6667 76.7909 95.6667 79V124.833C95.6667 136.339 86.3393 145.667 74.8333 145.667C63.3274 145.667 54 136.339 54 124.833C54 114.687 61.2527 106.236 70.8563 104.379C73.0253 103.96 74.8333 102.209 74.8333 100L74.8333 58Z" fill="#D9D9D9"/>
 <defs>
-<linearGradient id="paint0_linear_17_5" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+<linearGradient id="paint0_linear_111_14" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
 <stop stop-color="#272D2D"/>
 <stop offset="1" stop-color="#6F8080"/>
 </linearGradient>
