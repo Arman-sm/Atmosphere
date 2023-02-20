@@ -44,7 +44,7 @@ function fileDropForUpload(event) {
 	}
 }
 
-function uploadPage(event) {
+function uploadPage() {
 	for (element of uploadForm.children) {
 		element.classList.toggle("invisible")
 	}

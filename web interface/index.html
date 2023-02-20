@@ -22,7 +22,7 @@
 		fetch(`/api/v1/${this.parentElement.getAttribute('data-item-type')}/${this.parentElement.getAttribute('data-id')}`, {
 			method: 'DELETE'
 		}
-		).then(refresh)"
+		).then(() => refresh(containerPath.map(item => item[0]).join('/')))"
 		>
 		<img src="/web/images/garbage-can.svg"/>
 		<span>Delete</span>
@@ -66,7 +66,16 @@
 <div id="upload-background" class="invisible"
 onclick="if (event.target == this) { this.classList.toggle('invisible', true); }">
 <!-- #region upload form -->
-<form id="upload-page" action="/api/v1/audio" method="POST" enctype="multipart/form-data" onsubmit="console.log(window.a = event);setTimeout(refresh, 2500)">
+<form id="upload-page" action="/api/v1/audio" method="POST" enctype="multipart/form-data"
+	onsubmit="
+		fetch('/api/v1/audio/', { method: 'POST', body: new FormData(this) }).then(() => {
+			refresh(containerPath.map(item => item[0]).join('/'))
+			this.reset()
+			uploadPage()
+		})
+		return false
+	"
+	>
 	<div id="upload-file-section"
 		ondrop="fileDropForUpload(event, this); this.classList.toggle('active-drop', false)"
 		ondragenter="this.classList.toggle('active-drop', true)"
@@ -105,7 +114,7 @@ onclick="if (event.target == this) { this.classList.toggle('invisible', true); }
 		</div>
 	</div>
 	<!-- close/next -->
-	<button id="submit-upload" type="submit" class="no-max-width invisible" onclick="uploadPage()">
+	<button id="submit-upload" type="submit" class="no-max-width invisible">
 		Submit
 	</button>
 </form>

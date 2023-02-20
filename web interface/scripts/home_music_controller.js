@@ -82,15 +82,12 @@ async function refresh(selectedContainerID = "") {
 
 	resultContainerPath = ""
 	for (const container of containerPath) {
-		console.log(container)
 		resultContainerPath += `<h1 onclick="refresh('${container[0]}')">${container[1]}</h1>`
 	}
 
 	containerPathElement.innerHTML = resultContainerPath
 
 	const {containers: containerIDs, audios: audioIDs} = await fetch("/api/v1/view/" + selectedContainerID).then(response => response.json()).then(json => json)
-	console.log(selectedContainerID)
-	console.log(containerIDs, audioIDs)
 	browser.innerHTML = ""
 	for (const audioID of audioIDs) {
 		queryAudioMetadata(audioID, "Title").then(

@@ -80,6 +80,7 @@ button {
 #upload-file-section > span {
 	color: var(--dark-gray);
 	user-select: none;
+	pointer-events: none;
 	font-size: 2rem;
 	margin: auto auto 1rem auto;
 }
