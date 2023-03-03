@@ -9,13 +9,15 @@ For API's documentation please check out the wiki.
 1. Lyrics support, something like musixmatch's. ( In research and development )
 2. Live music broadcast or even voice call.
 3. Utility APIs and tools in the interface.
-4. Lyrics generator.
-5. Custom key value pair data for developers to attach to audios or containers for use in other applications.
-6. Sharing containers and audios between users.
-7. Audio effect tool.
-8. PWA App.
-9. More verbose commands for reducing request frequency.
+4. Custom key value pair data for developers to attach to audios or containers for use in other applications.
+5. Sharing containers and audios between users.
+6. Audio effect tool.
+7. PWA App.
+8. More verbose commands for reducing request frequency.
 ## In progress
+### Lyrics
+Work in progress
+Prototyped in [this](https://github.com/Arman-sm/Lyrics-walker) repository.
 ### Containers
 - [ ] API
   - [x] View
