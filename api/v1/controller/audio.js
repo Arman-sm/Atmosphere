@@ -1,114 +1,3 @@
-const { rename, rm, opendir } = require("fs/promises")
-
-const allowedAudioFormats = [
-	'mp3', 'mpeg', 'opus', 'ogg', 'oga', 'wav', 'aac', 'caf', 'm4a', 'mp4','weba', 'webm', 'dolby', 'flac'
-]
-
-class Audio {
-	updateMetadata() {
-		return new Promise(async function() {
-			const [, results] = await this.database.query("SELECT * FROM Audios WHERE ID = ?;", [this.ID])
-			if (results.length === 0) {
-				reject("Audio Not Found")
-			}
-			this.ownerID = results[0].Owner_ID
-			
-			this._title = results[0].Title
-			this._singer = results[0].Singer
-			this._format = results[0].Format
-			this._containerID = results[0].Container_ID
-		})
-	}
-
-	#changeMetadata(key, value) {
-		this.database.query(
-			`UPDATE Audios SET ${key} = ? WHERE ID = ?;`, [value, this.ID]
-		)
-	}
-	
-	get title() { return this._title }
-	set title(value) { this.#changeMetadata("Title", value) }
-	
-	get singer() { return this._singer }
-	set singer(value) { this.#changeMetadata("Singer", value) }
-	
-	get format() { return this._format }
-	set format(value) { this.#changeMetadata("Format", value) }
-	
-	get containerID() { return this._format }
-	set containerID(value) { this.#changeMetadata("Container_ID", value) }
-
-	async deleteCover() {
-		while (true) {
-			const file = await extensionCarelessFileSearch("./audio/covers", this.ID)
-			if (file === undefined) break
-			await rm("./audio/covers/" + file.name)
-		}
-	}
-	
-	async delete() {
-		this.deleteCover()
-		
-		this.database.query("DELETE FROM Audios WHERE ID = ?", [this.ID])
-		rm("./audio/audios/" + this.ID).catch(() => {})
-	}
-	
-	constructor (audioID, database) {
-		return new Promise(async function(resolve, reject) {
-			this.ID = audioID
-			this.database = database
-
-			this.updateMetadata().then(
-				metadata => resolve(this),
-				err => reject(err)
-			)
-		}
-		)
-	}
-
-	static async register(audioID, ownerID, database) {
-		await database.query(`INSERT INTO Audios(ID, Owner_ID) VALUES (?, ?)`, [audioID, ownerID])
-
-		return await new Audio(audioID, database)
-	}
-
-	static attachToRequest(req, res, next, database) {
-		try {
-			req.audio = new Audio(req.params.Audio_ID, database)
-			next()
-		} catch (err) {
-			req.status(404).end(err)
-		}
-	}
-	
-	static attachToRequestWithVerifiedOwnership(req, res, next, database) {
-		try {
-			req.audio = new Audio(req.params.Audio_ID, database)
-			if (req.user === req.audio.ownerID) return next()
-			req.status(404).end("Audio Not Found")
-			
-		} catch (err) {
-			req.status(404).end(err)
-		}
-	}
-}
-
-
-async function extensionCarelessFileSearch(dirname, filename) {
-	for await (const file of await opendir(dirname)) {
-		if (file.name.slice(0, file.name.lastIndexOf(".")) === filename) {
-			return file
-		}
-	}
-	return
-}
-// TODO: deprecate
-async function removeAudioCover(audioID) {
-}
-// TODO: deprecate
-async function removeAudio(audioID, database) {
-}
-// TODO: re-write based on the new Audio class
 async function manipulateAudioMetadata(database, audioID, updatedData) {
 	// Finding table columns that the client is allowed to manipulate
 	if (typeof allowedFields === "undefined") {
@@ -138,13 +27,11 @@ async function manipulateAudioMetadata(database, audioID, updatedData) {
 }
 
 function updateAudioData(req, res, database) {
-	if (!req.params.Audio_ID) { res.status(400).end("Audio ID Not Specified") }
-
 	if (req.files?.cover) {
 		rename
 	}
 
-	manipulateAudioMetadata(database, req.params["Audio_ID"], req.body).then(
+	manipulateAudioMetadata(database, req.audio.ID, req.body).then(
 		() => res.status(200).end(),
 		err => res.end(400).end()
 	)
@@ -183,4 +70,18 @@ function registerAudio(req, res, database) {
 	)
 }
 
-module.exports = { registerAudio, updateAudioData, removeAudio, removeAudioCover }
+function deleteAudio(req, res, database) {
+	switch (req.query.query) {
+		case "Picture":
+		case "Cover":
+			req.audio.cover().delete()
+		default:
+			if (req.query.query)
+				return res.status(400).end("Invalid Query")
+			
+			req.audio.delete(database)
+	}
+	res.status(200).end()
+}
+
+module.exports = { manipulateAudioMetadata, updateAudioData, registerAudio, registerAudioToDB, deleteAudio }

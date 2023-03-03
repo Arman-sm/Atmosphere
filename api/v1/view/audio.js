@@ -1,8 +1,5 @@
 const { createReadStream } = require("fs")
 const { stat } = require("fs/promises")
-const { removeAudio } = require("../controller/audio")
-const { getAudioDurationInSeconds } = require("get-audio-duration")
-const { returnCover } = require("./cover")
 
 function returnAudios(req, res, database) {
 	database.query(`SELECT ID FROM Audios WHERE Owner_ID = ?;`, [req.user.ID]).then(
@@ -13,21 +10,25 @@ function returnAudios(req, res, database) {
 
 // Pipes the music to the client from the specified start in seconds
 async function pipeAudio(req, res, database) {
-	const path = "./audio/audios/" + req.params.Audio_ID
-	let start = Number(req.query.start) || 0
+	const file = req.audio.audio()
 	
+	res.type(req.audio.format)
+	
+	let start = Number(req.query.start) || 0
+
 	try {
-		var { size } = await stat(path)
+		var { size } = await stat(file.path)
 	} catch (err) {
 		if (err.code === "ENOENT") {
 			res.status(404).end("audio file was not found")
-			removeAudio(req.params.Audio_ID, database)
+			req.audio.delete(database)
 			return
 		}
 		console.error(err)
 		return
 	}
-	start = Math.floor(start * (size / Math.floor(await getAudioDurationInSeconds(path))))
+
+	start = Math.floor(start * (size / Math.floor(await req.audio.duration())))
 	
 	if (isNaN(start)) start = 0
 
@@ -35,13 +36,14 @@ async function pipeAudio(req, res, database) {
 		return res.status(400).end("Start is more than audio's length")
 	}
 	return new Promise((resolve, reject) => {
-	fileStream = createReadStream(path, {
-		start: (start)
+	fileStream = createReadStream(file.path, {
+		start: start
 	})
 	fileStream.on("open", async () => {
 		fileStream.pipe(res)
 	})
 	fileStream.on("close", () => {
+		res.end()
 		resolve()
 	})
 	fileStream.on("error", (err) => {
@@ -57,13 +59,13 @@ async function queryAudio(req, res, database) {
 			.map(field => field.Field)
 			.filter(item => !(["ID", "Owner_ID"].includes(item)))
 	}
-	const { Audio_ID } = req.params
-	if (!Audio_ID) { return res.status(404).end("Audio ID Not Specified") }
+	const { audioID } = req.params
+	if (!audioID) { return res.status(404).end("Audio ID Not Specified") }
 	try {
 		// Selecting the audio with the audio id provided
 		const [results,] = await database.query(
 			`SELECT * FROM Audios WHERE ID = ? AND Owner_ID = ?;`,
-			[Audio_ID, req.user.ID]
+			[audioID, req.user.ID]
 		)
 		// Checking if there are audios with the specified audio id
 		if (results.length == 0) { return res.status(404).end("Audio Not Found") }
@@ -77,15 +79,19 @@ async function queryAudio(req, res, database) {
 			// Duration of the selected audio in seconds
 			case "Duration":
 				try {
-					return res.end(String(await getAudioDurationInSeconds(`./audio/audios/${Audio_ID}`)))
+					return res.end(String(await req.audio.duration()))
 				} catch (err) {
 					res.status(500).end("0")
 				}
 			case "Picture":
 			case "Cover":
 				try {	
-					await returnCover(req, res, Audio_ID, "./audio/covers/")
-				} catch {}
+					const cover = await req.audio.cover()
+					if (!cover)
+						return res.status(404).end()
+					
+					cover.send(res)
+				} catch(err) { console.error(err) }
 				return
 			default:
 				// If no query option matches the query

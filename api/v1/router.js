@@ -1,8 +1,9 @@
 const { queryAudio, returnAudios } = require("./view/audio.js")
+const { updateAudioData, registerAudio, deleteAudio } = require("./controller/audio.js")
 const { containerView, rootView, queryContainer } = require("./view/container")
 const { authenticate, sendToken, sentRegisterUserToken, setRegisterAuthorizationCookie, setAuthorizationCookie } = require("./authentication")
 const { returnUserID } = require("./view/user")
-const { registerAudio, updateAudioData, removeAudio, removeAudioCover } = require("./controller/audio.js")
+const { Audio } = require("./models/Audio")
 const express = require("express")
 const multerLib = require("multer")
 
@@ -32,40 +33,36 @@ let database = mysql.createConnection(databaseOptions)
 database.connect(err => {if (err) throw err})
 database = database.promise()
 
-async function verifyAudio(req, res, next) {
-	if ((await database.query("SELECT * FROM Audios WHERE ID = ? AND Owner_ID = ?", [req.params.Audio_ID, req.user.ID]))[0].length){
-		return next()
-	}
-	res.status(400).end("Audio Not Found")
-}
-
 console.log("Connected to the database at localhost on port 3306")
 
+//#region token
 router.post("/token/cookie", passDB(setAuthorizationCookie))
 router.post("/token", passDB(sendToken))
-
+//#endregion
+//#region user
 router.post("/user/cookie", passDB(setRegisterAuthorizationCookie))
 router.post("/user", passDB(sentRegisterUserToken))
+//#endregion
 
+// Requiring authentication for the rest
 router.use(authenticate)
-
+// Get user ID
 router.get("/user/id", returnUserID)
 
 function passDB(func) {
-	return (req, res) => func(req, res, database)
+	return (req, res, next) => func(req, res, database, next)
 }
-
+//#region Audio
 router.route("/audio").post(
 	multer.fields([{name : "audio", maxCount : 1}, {name : "cover", maxCount : 1}]),
 	passDB(registerAudio)
 )
-router.route("/audio/:Audio_ID")
+router.use("/audio/:audioID", passDB(Audio.attachToRequestWithVerifiedOwnership))
+router.route("/audio/:audioID")
 	.get(passDB(queryAudio))
 	.patch(passDB(updateAudioData))
-	.delete(verifyAudio, (req, res) => {
-		removeAudio(req.params.Audio_ID, database)
-		res.status(200).end()
-	})
+	.delete(passDB(deleteAudio))
+//#endregion
 
 router.get("/audios", passDB(returnAudios))
 
@@ -74,12 +71,13 @@ router.get("/container/:Container_ID", passDB(queryContainer))
 router.get("/view/", passDB(rootView))
 router.get("/view/:Container_ID", passDB(containerView))
 
-router.delete("/cover/audio/:Audio_ID", verifyAudio, (req, res) => {
-	removeAudioCover(req.params.Audio_ID)
+router.delete("/cover/audio/:audioID", Audio.attachToRequestWithVerifiedOwnership, (req, res) => {
+	removeAudioCover(req.params.audioID)
 	res.status(200).end()
 })
 
 router.all("*", (req, res) => {
+	console.log(1)
 	res.status(404).end("Not Found")
 })
 
