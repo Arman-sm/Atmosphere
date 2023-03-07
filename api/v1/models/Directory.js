@@ -16,7 +16,7 @@ class File {
 	}
 
 	send(response) {
-		return response.sendFile(path)
+		return response.sendFile(this.path)
 	}
 
 	async delete() {

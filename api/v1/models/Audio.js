@@ -59,7 +59,11 @@ class Audio {
 	}
 	
 	async cover() {
-		return (await Audio.audiosDirectory.fuzzySearch(this.ID))[0]
+		return (await Audio.coversDirectory.fuzzySearch(this.ID))[0]
+	}
+	
+	async lyrics() {
+		return (await Audio.lyricsDirectory.fuzzySearch(this.ID))[0]
 	}
 
 	async duration() {
@@ -68,11 +72,11 @@ class Audio {
 
 	
 	async delete() {
-		(await this.cover()).delete()
+		(await this.cover())?.delete()
 		this.audio().delete()
 		
 		this.database.query("DELETE FROM Audios WHERE ID = ?", [this.ID])
-		rm("./audio/audios/" + this.ID).catch(() => {})
+		Audio.audiosDirectory.file(this.ID).delete().catch(() => {})
 	}
 	
 	constructor (audioID, database, metadataUpdate) {

@@ -33,7 +33,7 @@ let database = mysql.createConnection(databaseOptions)
 database.connect(err => {if (err) throw err})
 database = database.promise()
 
-console.log("Connected to the database at localhost on port 3306")
+console.log("Connected to the database at localhost on port " + process.env.DB_PORT)
 
 //#region token
 router.post("/token/cookie", passDB(setAuthorizationCookie))
@@ -71,8 +71,8 @@ router.get("/container/:Container_ID", passDB(queryContainer))
 router.get("/view/", passDB(rootView))
 router.get("/view/:Container_ID", passDB(containerView))
 
-router.delete("/cover/audio/:audioID", Audio.attachToRequestWithVerifiedOwnership, (req, res) => {
-	removeAudioCover(req.params.audioID)
+router.delete("/cover/audio/:audioID", passDB(Audio.attachToRequestWithVerifiedOwnership), (req, res) => {
+	req.audio.delete()
 	res.status(200).end()
 })
 
