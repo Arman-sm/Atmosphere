@@ -1,7 +1,7 @@
-async function manipulateAudioMetadata(database, audioID, updatedData) {
+async function manipulateAudioMetadata(audio, updatedData) {
 	// Finding table columns that the client is allowed to manipulate
 	if (typeof allowedFields === "undefined") {
-		global.allowedFields = (await database.query(`SHOW COLUMNS FROM Audios;`))[0]
+		global.allowedFields = (await audio.database.query(`SHOW COLUMNS FROM Audios;`))[0]
 			.map(field => field.Field)
 			.filter(item => !(["ID", "Owner_ID"].includes(item)))
 	}
@@ -14,8 +14,8 @@ async function manipulateAudioMetadata(database, audioID, updatedData) {
 				reject("Audio Format is Not Supported")
 			}
 			if (allowedFields.includes(property) && updatedData[property]) {
-				database.query(
-					`UPDATE Audios SET ${property} = ? WHERE ID = ?;`, [updatedData[property], audioID]
+				audio.database.query(
+					`UPDATE Audios SET ${property} = ? WHERE ID = ?;`, [updatedData[property], audio.ID]
 				)
 			}
 		}
@@ -31,7 +31,7 @@ function updateAudioData(req, res, database) {
 		rename
 	}
 
-	manipulateAudioMetadata(database, req.audio.ID, req.body).then(
+	manipulateAudioMetadata(req.audio, req.body).then(
 		() => res.status(200).end(),
 		err => res.end(400).end()
 	)
@@ -70,16 +70,16 @@ function registerAudio(req, res, database) {
 	)
 }
 
-function deleteAudio(req, res, database) {
+async function deleteAudio(req, res) {
 	switch (req.query.query) {
 		case "Picture":
 		case "Cover":
-			req.audio.cover().delete()
+			(await req.audio.cover())?.delete()
 		default:
 			if (req.query.query)
 				return res.status(400).end("Invalid Query")
 			
-			req.audio.delete(database)
+			req.audio.delete()
 	}
 	res.status(200).end()
 }

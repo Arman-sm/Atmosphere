@@ -28,7 +28,12 @@
 		<span>Delete</span>
 	</button>
 	<button type="button"
-		onmouseup="fetch('/api/v1/cover/audio/' + this.parentElement.getAttribute('data-id'), {method: 'DELETE'}).then(refresh)">
+		onmouseup="
+			fetch(
+				`/api/v1/audio/${this.parentElement.getAttribute('data-id')}?query=Cover`,
+				{method: 'DELETE'}
+			).then(() => refresh(containerPath.map(item => item[0]).join('/')))
+		">
 		<img src="/web/images/garbage-can.svg"/>
 		<span>Delete Cover</span>
 	</button>

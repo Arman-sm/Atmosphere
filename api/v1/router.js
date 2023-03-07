@@ -59,9 +59,9 @@ router.route("/audio").post(
 )
 router.use("/audio/:audioID", passDB(Audio.attachToRequestWithVerifiedOwnership))
 router.route("/audio/:audioID")
-	.get(passDB(queryAudio))
-	.patch(passDB(updateAudioData))
-	.delete(passDB(deleteAudio))
+	.get(queryAudio)
+	.patch(updateAudioData)
+	.delete(deleteAudio)
 //#endregion
 
 router.get("/audios", passDB(returnAudios))
@@ -71,14 +71,8 @@ router.get("/container/:Container_ID", passDB(queryContainer))
 router.get("/view/", passDB(rootView))
 router.get("/view/:Container_ID", passDB(containerView))
 
-router.delete("/cover/audio/:audioID", passDB(Audio.attachToRequestWithVerifiedOwnership), (req, res) => {
-	req.audio.delete()
-	res.status(200).end()
-})
-
 router.all("*", (req, res) => {
-	console.log(1)
-	res.status(404).end("Not Found")
+	res.status(404).end("Not found")
 })
 
 module.exports = router

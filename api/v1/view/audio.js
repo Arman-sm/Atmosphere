@@ -9,7 +9,7 @@ function returnAudios(req, res, database) {
 }
 
 // Pipes the music to the client from the specified start in seconds
-async function pipeAudio(req, res, database) {
+async function pipeAudio(req, res) {
 	const file = req.audio.audio()
 	
 	res.type(req.audio.format)
@@ -21,7 +21,7 @@ async function pipeAudio(req, res, database) {
 	} catch (err) {
 		if (err.code === "ENOENT") {
 			res.status(404).end("audio file was not found")
-			req.audio.delete(database)
+			req.audio.delete()
 			return
 		}
 		console.error(err)
@@ -53,9 +53,9 @@ async function pipeAudio(req, res, database) {
 	})
 	})
 }
-async function queryAudio(req, res, database) {
+async function queryAudio(req, res) {
 	if (typeof allowedFields === "undefined") {
-		global.allowedFields = (await database.query(`SHOW COLUMNS FROM Audios;`))[0]
+		global.allowedFields = (await req.audio.database.query(`SHOW COLUMNS FROM Audios;`))[0]
 			.map(field => field.Field)
 			.filter(item => !(["ID", "Owner_ID"].includes(item)))
 	}
@@ -63,7 +63,7 @@ async function queryAudio(req, res, database) {
 	if (!audioID) { return res.status(404).end("Audio ID Not Specified") }
 	try {
 		// Selecting the audio with the audio id provided
-		const [results,] = await database.query(
+		const [results,] = await req.audio.database.query(
 			`SELECT * FROM Audios WHERE ID = ? AND Owner_ID = ?;`,
 			[audioID, req.user.ID]
 		)
@@ -72,7 +72,7 @@ async function queryAudio(req, res, database) {
 		res.status(200)
 		
 		// Piping the file if no query is specified
-		if (!req.query["query"]) { return await pipeAudio(req, res, database) }
+		if (!req.query["query"]) { return await pipeAudio(req, res) }
 		
 		// Options for querying different info about an audio
 		switch (req.query["query"]) {
@@ -101,7 +101,7 @@ async function queryAudio(req, res, database) {
 				res.status(400).end("Invalid Query")
 		}
 		return
-	} catch (err) { console.error(err); res.status(500).end("Internal Error"); }
+	} catch (err) { console.error(err); res.status(500).end("Internal Error") }
 }
 
 module.exports = { queryAudio, returnAudios }
