@@ -71,7 +71,7 @@
 <div id="upload-background" class="invisible"
 onclick="if (event.target == this) { this.classList.toggle('invisible', true); }">
 <!-- #region upload form -->
-<form id="upload-page" action="/api/v1/audio" method="POST" enctype="multipart/form-data"
+<form id="upload-page" action="/api/v1/audio" class="page page-audio-upload" method="POST" enctype="multipart/form-data"
 	onsubmit="
 		fetch('/api/v1/audio/', { method: 'POST', body: new FormData(this) }).then(() => {
 			refresh(containerPath.map(item => item[0]).join('/'))
@@ -123,18 +123,21 @@ onclick="if (event.target == this) { this.classList.toggle('invisible', true); }
 		Submit
 	</button>
 </form>
+<div class="page page-audio-edit">
+
+</div>
 <!-- #endregion -->
 </div>
 <!-- #endregion -->
 <div id="quick-access">
-	<button type="button" id="quick-access-profile" class="black no-shadow">
+	<button type="button" id="quick-access-profile" class="black no-shadow" onclick="location.href = '/login'">
 		<div>
-			<span>A</span>
+			<span></span>
 		</div>
-		<span>Arman Salimi</span>
+		<span></span>
 	</button>
 	<button type="button" id="quick-access-upload" title="upload"
-		class="black no-shadow" onclick="document.getElementById('upload-background').classList.toggle('invisible')">
+		class="black no-shadow" onclick="page('audio-upload')">
 		<img src="./web/images/upload.svg" alt="">
 		<span>Upload</span>
 	</button>

@@ -1,6 +1,6 @@
 async function manipulateAudioMetadata(audio, updatedData) {
 	// Finding table columns that the client is allowed to manipulate
-	if (typeof allowedFields === "undefined") {
+	if (typeof global.allowedFields === "undefined") {
 		global.allowedFields = (await audio.database.query(`SHOW COLUMNS FROM Audios;`))[0]
 			.map(field => field.Field)
 			.filter(item => !(["ID", "Owner_ID"].includes(item)))
@@ -13,7 +13,7 @@ async function manipulateAudioMetadata(audio, updatedData) {
 				if (!updatedData[property]) continue
 				reject("Audio Format is Not Supported")
 			}
-			if (allowedFields.includes(property) && updatedData[property]) {
+			if (global.allowedFields.includes(property) && updatedData[property]) {
 				audio.database.query(
 					`UPDATE Audios SET ${property} = ? WHERE ID = ?;`, [updatedData[property], audio.ID]
 				)

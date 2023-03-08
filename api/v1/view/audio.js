@@ -54,21 +54,17 @@ async function pipeAudio(req, res) {
 	})
 }
 async function queryAudio(req, res) {
-	if (typeof allowedFields === "undefined") {
-		global.allowedFields = (await req.audio.database.query(`SHOW COLUMNS FROM Audios;`))[0]
+	if (typeof global.allowedFields === "undefined") {
+		global.allowedFields = Array.from((await req.audio.database.query(`SHOW COLUMNS FROM Audios;`)))[0]
 			.map(field => field.Field)
 			.filter(item => !(["ID", "Owner_ID"].includes(item)))
 	}
-	const { audioID } = req.params
-	if (!audioID) { return res.status(404).end("Audio ID Not Specified") }
 	try {
 		// Selecting the audio with the audio id provided
 		const [results,] = await req.audio.database.query(
 			`SELECT * FROM Audios WHERE ID = ? AND Owner_ID = ?;`,
-			[audioID, req.user.ID]
+			[req.audio.ID, req.user.ID]
 		)
-		// Checking if there are audios with the specified audio id
-		if (results.length == 0) { return res.status(404).end("Audio Not Found") }
 		res.status(200)
 		
 		// Piping the file if no query is specified
@@ -95,7 +91,7 @@ async function queryAudio(req, res) {
 				return
 			default:
 				// If no query option matches the query
-				if (allowedFields.includes(req.query["query"])) {
+				if (global.allowedFields.includes(req.query["query"])) {
 					return res.status(200).end(results[0][req.query["query"]])
 				}
 				res.status(400).end("Invalid Query")

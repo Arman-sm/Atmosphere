@@ -1,8 +1,9 @@
 const { queryAudio, returnAudios } = require("./view/audio.js")
 const { updateAudioData, registerAudio, deleteAudio } = require("./controller/audio.js")
-const { containerView, rootView, queryContainer } = require("./view/container")
+const { containerView, rootView, queryContainer, deleteContainer, manipulateContainerMetadata, createContainer } = require("./view/container")
 const { authenticate, sendToken, sentRegisterUserToken, setRegisterAuthorizationCookie, setAuthorizationCookie } = require("./authentication")
 const { returnUserID } = require("./view/user")
+const { Container } = require("./models/Container")
 const { Audio } = require("./models/Audio")
 const express = require("express")
 const multerLib = require("multer")
@@ -66,10 +67,19 @@ router.route("/audio/:audioID")
 
 router.get("/audios", passDB(returnAudios))
 
-router.get("/container/:Container_ID", passDB(queryContainer))
+router.post("/container", passDB(createContainer))
+
+router.use("/container/:containerID", passDB(Container.attachToRequestWithVerifiedOwnership))
+router.route("/container/:containerID")
+	.get(queryContainer)
+	.patch((req, res) => manipulateContainerMetadata(req.container, req.body).then(
+		() => res.status(200).end(),
+		err => res.status(400).end(err)
+	))
+	.delete(deleteContainer)
 
 router.get("/view/", passDB(rootView))
-router.get("/view/:Container_ID", passDB(containerView))
+router.get("/view/:containerID", passDB(containerView))
 
 router.all("*", (req, res) => {
 	res.status(404).end("Not found")

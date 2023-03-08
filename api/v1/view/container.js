@@ -1,4 +1,4 @@
-const { returnCover } = require("./cover")
+const { Container } = require("../models/Container")
 
 async function rootView(req, res, database) {
 	const [containers,] = await database.query(
@@ -21,11 +21,11 @@ async function rootView(req, res, database) {
 async function containerView(req, res, database) {
 	const [containers,] = await database.query(
 		"SELECT ID FROM Containers WHERE Container_ID = ? AND Owner_ID = ?;",
-		[req.params.Container_ID, req.user.ID]
+		[req.params.containerID, req.user.ID]
 	)
 	const [audios,] = await database.query(
 		"SELECT ID FROM Audios WHERE Container_ID = ? AND Owner_ID = ?;",
-		[req.params.Container_ID, req.user.ID]
+		[req.params.containerID, req.user.ID]
 	)
 
 	res.status(200).end(
@@ -36,40 +36,116 @@ async function containerView(req, res, database) {
 	)
 }
 
-async function queryContainer(req, res, database) {
-	if (typeof allowedFields === "undefined") {
-		global.allowedFields = (await database.query(`SHOW COLUMNS FROM Containers;`))[0]
+async function queryContainer(req, res) {
+	if (typeof global.allowedFields === "undefined") {
+		global.allowedFields = (await req.container.database.query(`SHOW COLUMNS FROM Containers;`))[0]
 			.map(field => field.Field)
 			.filter(item => !(["ID", "Owner_ID"].includes(item)))
 	}
-	const { Container_ID } = req.params
-	if (!Container_ID) { return res.status(404).end("Container ID Not Specified") }
 
 	if (req.query.query === "Cover" || req.query.query === "Picture") {
 		try {
-			return await returnCover(req, res, req.params.Container_ID, "./container/covers/")
+			const cover = await req.container.cover()
+			if (cover) {
+				res.status(200)
+				cover.send(res)
+				return
+			}
+			return res.status(404).end("Cover Not Found")
 		} catch (err) {
-			return
+			console.error(err)
+			return res.status(500).end("Internal Error")
 		}
 	}
 
 	try {
 		// Selecting the container with the container id provided
-		const [results,] = await database.query(
+		const [results,] = await req.container.database.query(
 			`SELECT * FROM Containers WHERE ID = ? AND Owner_ID = ?;`,
-			[Container_ID, req.user.ID]
+			[req.container.ID, req.user.ID]
 		)
-		// Checking if there are audios with the specified audio id
-		if (results.length == 0) {
-			return res.status(404).end("Container Not Found")
-		}
-
 		// If no query option matches the query
-		if (allowedFields.includes(req.query["query"])) {
+		if (global.allowedFields.includes(req.query["query"])) {
 			return res.status(200).end(results[0][req.query["query"]])
 		}
 		return res.status(400).end("Invalid Query")
 	} catch (err) { console.error(err); res.status(500).end("Internal Error"); }
 }
 
-module.exports = {containerView, rootView, queryContainer}
+async function manipulateContainerMetadata(container, updatedData) {
+	// Finding table columns that the client is allowed to manipulate
+	if (typeof global.allowedFields === "undefined") {
+		global.allowedFields = [...(await container.database.query(`SHOW COLUMNS FROM Audios;`))][0]
+			.map(field => field.Field)
+			.filter(item => !(["ID", "Owner_ID"].includes(item)))
+	}
+
+	// Applying changes to the database where possible
+	for (property in updatedData) {
+		if (property === "Format" && !allowedAudioFormats.includes(updatedData[property].toLowerCase())) {
+			if (!updatedData[property]) continue
+			throw "Audio Format is Not Supported"
+		}
+		if (global.allowedFields.includes(property) && updatedData[property]) {
+			container.database.query(
+				`UPDATE Containers SET ${property} = ? WHERE ID = ?;`, [updatedData[property], container.ID]
+			)
+		}
+	}
+	return
+}
+
+async function deleteContainer(req, res) {
+	switch (req.query.query) {
+		case "Picture":
+		case "Cover":
+			(await req.container.cover())?.delete()
+		default:
+			if (req.query.query)
+				return res.status(400).end("Invalid Query")
+			
+			req.container.delete()
+	}
+	res.status(200).end()
+}
+
+function uuid(allowedCharacters, resultLength) {
+	results = ""
+	for (let index = 1; index <= resultLength; index++) {
+		results += allowedCharacters.at(Math.floor(Math.random() * allowedCharacters.length))
+	}
+	return results
+}
+
+async function createContainer(req, res, database) {
+	let ID = ""
+	do {
+		ID = uuid([ 
+			'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
+			'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+			'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a',
+			'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+			'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
+			't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1',
+			'2', '3', '4', '5', '6', '7', '8', '9', '_',
+		], 32)
+	} while ( await (async function() {
+		try {
+			req.container = await Container.new(ID, database)
+		} catch (err) {
+			return true
+		}
+		return false
+	})())
+	
+	if (req.files.cover?.[0]) {
+		Container.coversDirectory.file(req.files.cover[0].filename)
+			.rename(`${ID}.${req.files.cover[0].mimetype.split("/").at(-1)}`)
+	}
+
+	manipulateContainerMetadata(req.container, req.body)
+
+	res.status(201).end(ID)
+}
+
+module.exports = {containerView, rootView, queryContainer, deleteContainer, manipulateContainerMetadata, createContainer}

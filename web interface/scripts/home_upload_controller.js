@@ -1,5 +1,6 @@
 const uploadForm = document.getElementById("upload-page")
 const nextButton = document.getElementById("upload-next")
+const pageBackground = document.getElementById("upload-background")
 const uploadPictureGraphic = document.getElementById("upload-picture-graphic")
 const uploadPicture = document.getElementById("upload-picture")
 const uploadTitle = document.getElementById("upload-title")
@@ -42,6 +43,18 @@ function fileDropForUpload(event) {
 	if (validateFile(event.dataTransfer)) {
 		document.getElementById("upload-audio-file-input").files = event.dataTransfer.files
 	}
+}
+
+function page(pageName) {
+	for (element of document.getElementsByClassName("page")) {
+		element.classList.toggle("invisible", true)
+	}
+
+	for (element of document.getElementsByClassName(`page-${pageName}`)) {
+		element.classList.toggle("invisible", false)
+	}
+
+	pageBackground.classList.toggle("invisible", false)
 }
 
 function uploadPage() {

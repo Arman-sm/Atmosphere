@@ -19,26 +19,39 @@ class File {
 		return response.sendFile(this.path)
 	}
 
+	async rename(newName) {
+		await filesystem.rename(this.path, newName)
+		this.path = `./${newName}`
+	}
+
 	async delete() {
 		await filesystem.rm(this.path)
 	}
 }
 
 class Directory {
-	path
+	#path
 	
+	get path() { return this.#path }
+	set path(value) { this.#path = pathLib.resolve(value) }
+	
+
+
 	constructor(path) {
 		this.path = path
 	}
 	file(name) {
-		return new File(this.path + "/" + name)
+		return new File(`${this.path}/${name}`)
+	}
+	async exists(name) {
+		return filesystem.exists(`${this.path}/${name}`)
 	}
 	// search by the basename
 	async fuzzySearch(basename, resultLimit = 1) {
 		let results = []
 		for await (const file of await filesystem.opendir(this.path)) {
 			if (file.name.slice(0, file.name.lastIndexOf(".")) === basename) {
-				results.push(new File(this.path + "/" + file.name))
+				results.push(new File(`${this.path}/${file.name}`))
 				
 				if (results.length >= resultLimit)
 					return results

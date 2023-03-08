@@ -79,8 +79,8 @@ class Audio {
 		Audio.audiosDirectory.file(this.ID).delete().catch(() => {})
 	}
 	
-	constructor (audioID, database, metadataUpdate) {
-		if (!metadataUpdate)
+	constructor (audioID, database, metadataUpdateStat) {
+		if (!metadataUpdateStat)
 			throw "Make a new instance via the 'new' method"
 
 		this.ID = audioID
@@ -103,10 +103,10 @@ class Audio {
 
 	static async attachToRequest(req, res, database, next) {
 		try {
-			req.audio = await new Audio(req.params.audioID, database)
+			req.audio = await Audio.new(req.params.audioID, database)
 			next()
 		} catch (err) {
-			req.status(404).end(err)
+			req.status(404).end(String(err))
 		}
 	}
 	
@@ -120,24 +120,9 @@ class Audio {
 			
 			res.status(404).end("Audio Not Found")
 		} catch (err) {
-			res.status(404).end(err)
+			res.status(404).end(String(err))
 		}
 	}
 }
 
-async function extensionCarelessFileSearch(dirname, filename) {
-	for await (const file of await opendir(dirname)) {
-		if (file.name.slice(0, file.name.lastIndexOf(".")) === filename) {
-			return file
-		}
-	}
-	return
-}
-// TODO: deprecate
-async function removeAudioCover(audioID) {
-}
-// TODO: deprecate
-async function removeAudio(audioID, database) {
-}
-
-module.exports = { Audio,removeAudioCover }
+module.exports = { Audio }

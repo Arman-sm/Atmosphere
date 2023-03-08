@@ -54,7 +54,7 @@ button {
 	z-index: 50;
 	display: flex;
 }
-#upload-page {
+.page {
 	display: flex;
 	flex-direction: column;
 	gap: 0.5rem;
