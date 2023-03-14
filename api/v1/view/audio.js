@@ -1,5 +1,6 @@
 const { createReadStream } = require("fs")
-const { stat } = require("fs/promises")
+const { stat } = require("fs/promises");
+const { Audio } = require("../models/Audio");
 
 function returnAudios(req, res, database) {
 	database.query(`SELECT ID FROM Audios WHERE Owner_ID = ?;`, [req.user.ID]).then(
@@ -11,8 +12,8 @@ function returnAudios(req, res, database) {
 // Pipes the music to the client from the specified start in seconds
 async function pipeAudio(req, res) {
 	const file = req.audio.audio()
-	
-	res.type(req.audio.format)
+	if (req.audio.format)
+		res.type(req.audio.format)
 	
 	let start = Number(req.query.start) || 0
 
@@ -54,11 +55,6 @@ async function pipeAudio(req, res) {
 	})
 }
 async function queryAudio(req, res) {
-	if (typeof global.allowedFields === "undefined") {
-		global.allowedFields = Array.from((await req.audio.database.query(`SHOW COLUMNS FROM Audios;`)))[0]
-			.map(field => field.Field)
-			.filter(item => !(["ID", "Owner_ID"].includes(item)))
-	}
 	try {
 		// Selecting the audio with the audio id provided
 		const [results,] = await req.audio.database.query(
@@ -91,7 +87,7 @@ async function queryAudio(req, res) {
 				return
 			default:
 				// If no query option matches the query
-				if (global.allowedFields.includes(req.query["query"])) {
+				if (Audio.DB_COLUMNS.includes(req.query["query"])) {
 					return res.status(200).end(results[0][req.query["query"]])
 				}
 				res.status(400).end("Invalid Query")

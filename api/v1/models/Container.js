@@ -1,6 +1,8 @@
 const { Directory, File } = require("./Directory")
 
 class Container {
+	static DB_COLUMNS = ["ID", "Owner_ID", "Container_ID", "Title"]
+	
 	ID
 	ownerID
 

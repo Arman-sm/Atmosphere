@@ -35,8 +35,6 @@ class Directory {
 	get path() { return this.#path }
 	set path(value) { this.#path = pathLib.resolve(value) }
 	
-
-
 	constructor(path) {
 		this.path = path
 	}

@@ -1,11 +1,9 @@
 const { getAudioDurationInSeconds } = require("get-audio-duration")
 const { Directory, File } = require("./Directory")
 
-const allowedAudioFormats = [
-	'mp3', 'mpeg', 'opus', 'ogg', 'oga', 'wav', 'aac', 'caf', 'm4a', 'mp4','weba', 'webm', 'dolby', 'flac'
-]
-
 class Audio {
+	static DB_COLUMNS = ["ID", "Owner_ID", "Container_ID", "Format", "Singer", "Title"]
+	
 	ID
 	ownerID
 

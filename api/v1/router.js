@@ -1,6 +1,7 @@
 const { queryAudio, returnAudios } = require("./view/audio.js")
 const { updateAudioData, registerAudio, deleteAudio } = require("./controller/audio.js")
-const { containerView, rootView, queryContainer, deleteContainer, manipulateContainerMetadata, createContainer } = require("./view/container")
+const { containerView, rootView, queryContainer } = require("./view/container")
+const { deleteContainer, manipulateContainerMetadata, registerContainer } = require("./controller/container")
 const { authenticate, sendToken, sentRegisterUserToken, setRegisterAuthorizationCookie, setAuthorizationCookie } = require("./authentication")
 const { returnUserID } = require("./view/user")
 const { Container } = require("./models/Container")
@@ -8,13 +9,17 @@ const { Audio } = require("./models/Audio")
 const express = require("express")
 const multerLib = require("multer")
 
-const multer = multerLib({
+const multerAudio = multerLib({
 	storage : multerLib.diskStorage({
 		destination : (req, file, cb) => {
-			if (file.fieldname === "audio") return cb(null, "./audio/audios")
-			cb(null, "./audio/covers/")
+			if (file.fieldname === "audio") return cb(null, Audio.audiosDirectory.path)
+			cb(null, Audio.coversDirectory.path)
 		}
 	})
+})
+
+const multerContainer = multerLib({
+	dest: Container.coversDirectory.path
 })
 
 const router = express.Router()
@@ -55,7 +60,7 @@ function passDB(func) {
 }
 //#region Audio
 router.route("/audio").post(
-	multer.fields([{name : "audio", maxCount : 1}, {name : "cover", maxCount : 1}]),
+	multerAudio.fields([{name : "audio", maxCount : 1}, {name : "cover", maxCount : 1}]),
 	passDB(registerAudio)
 )
 router.use("/audio/:audioID", passDB(Audio.attachToRequestWithVerifiedOwnership))
@@ -67,7 +72,10 @@ router.route("/audio/:audioID")
 
 router.get("/audios", passDB(returnAudios))
 
-router.post("/container", passDB(createContainer))
+router.post("/container",
+	multerContainer.fields([{name: "cover", maxCount: 1}]),
+	passDB(registerContainer)
+)
 
 router.use("/container/:containerID", passDB(Container.attachToRequestWithVerifiedOwnership))
 router.route("/container/:containerID")
