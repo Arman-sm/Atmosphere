@@ -90,7 +90,7 @@ router.get("/view/", passDB(rootView))
 router.get("/view/:containerID", passDB(containerView))
 
 router.all("*", (req, res) => {
-	res.status(404).end("Not found")
+	res.status(404).end("Not Found")
 })
 
 module.exports = router
