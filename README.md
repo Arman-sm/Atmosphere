@@ -19,10 +19,10 @@ For API's documentation please check out the wiki.
 Work in progress
 Prototyped in [this](https://github.com/Arman-sm/Lyrics-walker) repository.
 ### Containers
-- [ ] API
+- [x] API
   - [x] View
-  - [ ] Edit
-  - [ ] Delete
+  - [x] Edit
+  - [x] Delete
 - [ ] Web Interface
   - [x] View
   - [ ] Edit
