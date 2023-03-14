@@ -35,6 +35,7 @@ Prototyped in [this](https://github.com/Arman-sm/Lyrics-walker) repository.
 ### Setting up the database
 1. Create a database
 2. Use the database and run [Users.sql](/setup/DB/Users.sql) file on your database to create a table for users
+3. Do the same with [Audios.sql](/setup/DB/Containers.sql) file to create a table for containers
 3. Do the same with [Audios.sql](/setup/DB/Audios.sql) file to create a table for audios
 ### Configuring the server
 For setting it up you'll need to create a file named `.env` including information needed for the sever to get started.
