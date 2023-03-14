@@ -20,7 +20,7 @@ app.get("/", (req, res) => res.redirect("/web"))
 app.get("/login", (req, res) => res.status(200).sendFile(resolvePath("./web interface/login.html")))
 app.get("/register", (req, res) => res.status(200).sendFile(resolvePath("./web interface/register.html")))
 
-if (process.env.MODE === 'DEV') {app.get("/test", (req, res) => res.status(200).sendFile(resolvePath("./web interface/test.html")))}
+if (process.env.MODE === "DEV") {app.get("/test", (req, res) => res.status(200).sendFile(resolvePath("./web interface/test.html")))}
 
 app.all("/*", (req, res) => {
 	res.status(404).sendFile(resolvePath("./web interface/404.html"))

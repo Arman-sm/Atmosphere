@@ -18,30 +18,41 @@
 <div id="container">
 <div id="context-menu" class="invisible">
 	<button type="button"
-		onmouseup="fetch('/api/v1/audio/' + this.parentElement.getAttribute('data-audio-id'), {method: 'DELETE'}).then(refresh)">
+		onmouseup="
+		fetch(`/api/v1/${this.parentElement.getAttribute('data-item-type')}/${this.parentElement.getAttribute('data-id')}`, {
+			method: 'DELETE'
+		}
+		).then(() => refresh(containerPath.map(item => item[0]).join('/')))"
+		>
 		<img src="/web/images/garbage-can.svg"/>
 		<span>Delete</span>
 	</button>
 	<button type="button"
-		onmouseup="fetch('/api/v1/cover/audio/' + this.parentElement.getAttribute('data-audio-id'), {method: 'DELETE'}).then(refresh)">
+		onmouseup="
+			fetch(
+				`/api/v1/audio/${this.parentElement.getAttribute('data-id')}?query=Cover`,
+				{method: 'DELETE'}
+			).then(() => refresh(containerPath.map(item => item[0]).join('/')))
+		">
 		<img src="/web/images/garbage-can.svg"/>
 		<span>Delete Cover</span>
 	</button>
 	<button type="button"
 		onmouseup="
-		fetch('/api/v1/audio/' + this.parentElement.getAttribute('data-audio-id'), {
+		fetch('/api/v1/audio/' + this.parentElement.getAttribute('data-id'), {
 			method : 'PATCH',
 			headers : {
 				'Content-Type' : 'application/json'
 			},
 			body : JSON.stringify({Title:''})
-		}).then(refresh)">
+		}).then(refresh)"
+	>
 		<img src="/web/images/garbage-can.svg"/>
 		<span>Delete Title</span>
 	</button>
 	<button type="button"
 		onmouseup="
-		fetch('/api/v1/audio/' + this.parentElement.getAttribute('data-audio-id'), {
+		fetch('/api/v1/audio/' + this.parentElement.getAttribute('data-id'), {
 			method : 'PATCH',
 			headers : {
 				'Content-Type' : 'application/json'
@@ -60,7 +71,16 @@
 <div id="upload-background" class="invisible"
 onclick="if (event.target == this) { this.classList.toggle('invisible', true); }">
 <!-- #region upload form -->
-<form id="upload-page" action="/api/v1/audio" method="POST" enctype="multipart/form-data" onsubmit="console.log(window.a = event);setTimeout(refresh, 2500)">
+<form id="upload-page" action="/api/v1/audio" class="page page-audio-upload" method="POST" enctype="multipart/form-data"
+	onsubmit="
+		fetch('/api/v1/audio/', { method: 'POST', body: new FormData(this) }).then(() => {
+			refresh(containerPath.map(item => item[0]).join('/'))
+			this.reset()
+			uploadPage()
+		})
+		return false
+	"
+	>
 	<div id="upload-file-section"
 		ondrop="fileDropForUpload(event, this); this.classList.toggle('active-drop', false)"
 		ondragenter="this.classList.toggle('active-drop', true)"
@@ -89,8 +109,9 @@ onclick="if (event.target == this) { this.classList.toggle('invisible', true); }
 		<input type="file" id="upload-picture" name="cover" class="invisible"
 			onchange="uploadPictureGraphic.src = toDataURI(uploadPicture.files[0])"/>
 		<img src="/web/images/music.svg" id="upload-picture-graphic"
-			onclick="uploadPicture.click()" style="cursor: pointer;"
+		onclick="uploadPicture.click()" style="cursor: pointer;"
 		/>
+		<img src="/web/images/change-cover-overlay.svg" id="upload-picture-graphic-overlay"/>
 		<div>
 			<input type="text" id="upload-title" name="Title" maxlength="50" placeholder="Title" class="no-max-width"/>
 			<input type="text" id="upload-singer" name="Singer" maxlength="50" placeholder="Singer"class="no-max-width"/>
@@ -98,31 +119,34 @@ onclick="if (event.target == this) { this.classList.toggle('invisible', true); }
 		</div>
 	</div>
 	<!-- close/next -->
-	<button id="submit-upload" type="submit" class="no-max-width invisible" onclick="uploadPage()">
+	<button id="submit-upload" type="submit" class="no-max-width invisible">
 		Submit
 	</button>
-	</form>
-	<!-- #endregion -->
-</div>
-<div style="position: fixed; top: 0; left: 0;">
+</form>
+<div class="page page-audio-edit">
 
 </div>
 <!-- #endregion -->
+</div>
+<!-- #endregion -->
 <div id="quick-access">
-	<button type="button" id="quick-access-profile" class="black no-shadow">
+	<button type="button" id="quick-access-profile" class="black no-shadow" onclick="location.href = '/login'">
 		<div>
-			<span>A</span>
+			<span></span>
 		</div>
-		<span>Arman Salimi</span>
+		<span></span>
 	</button>
 	<button type="button" id="quick-access-upload" title="upload"
-		class="black no-shadow" onclick="document.getElementById('upload-background').classList.toggle('invisible')">
+		class="black no-shadow" onclick="page('audio-upload')">
 		<img src="./web/images/upload.svg" alt="">
 		<span>Upload</span>
 	</button>
 </div>
 <div id="browser">
-	<h1>Atmosphere</h1>
+	<div>
+		<h1></h1>
+		<h1>A</h1>
+	</div>
 	<div id="browser-item-container">
 	</div>
 </div>

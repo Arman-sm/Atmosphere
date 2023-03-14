@@ -1,70 +1,34 @@
-const { rename, rm, opendir } = require("fs/promises")
+const { Audio } = require("../models/Audio")
 
-const allowedAudioFormats = [
-	'mp3', 'mpeg', 'opus', 'ogg', 'oga', 'wav', 'aac', 'caf', 'm4a', 'mp4','weba', 'webm', 'dolby', 'flac'
-]
-
-async function extensionCarelessFileSearch(dirname, filename) {
-	for await (const file of await opendir(dirname)) {
-		if (file.name.slice(0, file.name.lastIndexOf(".")) === filename) {
-			return file
-		}
-	}
-	return
-}
-
-async function removeAudioCover(audioID) {
-	while (true) {
-		const file = await extensionCarelessFileSearch("./audio/covers", audioID)
-		if (file == undefined) break
-		await rm("./audio/covers/" + file.name)
-	}
-	return
-}
-
-async function removeAudio(audioID, database) {
-	rm("./audio/audios/" + audioID).catch(() => {})
-	removeAudioCover(audioID)
-
-	database.query("DELETE FROM Audios WHERE ID = ?", [audioID])
-}
-
-async function manipulateAudioMetadata(database, audioID, updatedData) {
-	// Finding table columns that the client is allowed to manipulate
-	if (typeof allowedFields === "undefined") {
-		global.allowedFields = (await database.query(`SHOW COLUMNS FROM Audios;`))[0]
-			.map(field => field.Field)
-			.filter(item => !(["ID", "Owner_ID"].includes(item)))
-	}
+async function manipulateAudioMetadata(audio, updatedData) {
 	return new Promise( async (resolve, reject) => { 
 	try {
 		// Applying changes to the database where possible
 		for (property in updatedData) {
-			if (property === "Format" && !allowedAudioFormats.includes(updatedData[property].toLowerCase())) {
+			if (property === "Format" && !Audio.DB_COLUMNS.includes(updatedData[property].toLowerCase())) {
 				if (!updatedData[property]) continue
 				reject("Audio Format is Not Supported")
 			}
-			if (allowedFields.includes(property) && updatedData[property]) {
-				database.query(
-					`UPDATE Audios SET ${property} = ? WHERE ID = ?;`, [updatedData[property], audioID]
+			if (Audio.DB_COLUMNS.includes(property) && updatedData[property]) {
+				audio.database.query(
+					`UPDATE Audios SET ${property} = ? WHERE ID = ?;`, [updatedData[property], audio.ID]
 				)
 			}
 		}
 		resolve()
 	} catch (err) {
+		console.log(err)
 		reject()
 	}
 	})
 }
 
 function updateAudioData(req, res, database) {
-	if (!req.params.Audio_ID) { res.status(400).end("Audio ID Not Specified") }
-
 	if (req.files?.cover) {
 		rename
 	}
 
-	manipulateAudioMetadata(database, req.params["Audio_ID"], req.body).then(
+	manipulateAudioMetadata(req.audio, req.body).then(
 		() => res.status(200).end(),
 		err => res.end(400).end()
 	)
@@ -91,16 +55,30 @@ function registerAudio(req, res, database) {
 			`./audio/covers/${req.files.audio[0].filename}.${req.files.cover[0].mimetype.split("/").at(-1)}`
 		)
 	}
-	registerAudioToDB(database, req.files.audio[0].filename, req.user.ID, req.body).then(
-		ID => {
+	Audio.register(req.files.audio[0].filename, req.user.ID, database).then(
+		audio => {
+			manipulateAudioMetadata(audio, req.body).catch(console.log)
 			res.status(201)
-			if (req.query.returnAudioID) {
-				return res.status(201).end(ID)
-			}
+			if (req.query.returnAudioID)
+				return res.status(201).end(audio.ID)
 			res.status(201).end()
 		},
 		err => {console.error(err); res.status(400).end()}
 	)
 }
 
-module.exports = { registerAudio, updateAudioData, removeAudio, removeAudioCover }
+async function deleteAudio(req, res) {
+	switch (req.query.query) {
+		case "Picture":
+		case "Cover":
+			(await req.audio.cover())?.delete()
+		default:
+			if (req.query.query)
+				return res.status(400).end("Invalid Query")
+			
+			req.audio.delete()
+	}
+	res.status(200).end()
+}
+
+module.exports = { manipulateAudioMetadata, updateAudioData, registerAudio, registerAudioToDB, deleteAudio }

@@ -10,7 +10,7 @@ body {margin: 0;}
 	overflow: hidden;
 	display: grid;
 	grid-template-columns: 15rem 1fr;
-	grid-template-rows: 1fr 7rem;
+	grid-template-rows: 1fr 6rem;
 	grid-template-areas: 'quick-access browser' 'music-control music-control';
 }
 button {
@@ -28,6 +28,21 @@ button {
 .active-drop > button {
 	box-shadow: none !important;
 }
+#upload-picture-graphic-overlay {
+	pointer-events: none;
+	float: left;
+	position: relative;
+	transition: opacity .25s;
+	opacity: 0;
+	z-index: 2;
+}
+#upload-picture-graphic {
+	position: absolute;
+	z-index: 1;
+}
+#upload-picture-graphic:hover ~ #upload-picture-graphic-overlay, #upload-picture-graphic-overlay:hover {
+	opacity: 100%;
+}
 #upload-background {
 	position: fixed;
 	padding: 2rem;
@@ -39,7 +54,7 @@ button {
 	z-index: 50;
 	display: flex;
 }
-#upload-page {
+.page {
 	display: flex;
 	flex-direction: column;
 	gap: 0.5rem;
@@ -65,6 +80,7 @@ button {
 #upload-file-section > span {
 	color: var(--dark-gray);
 	user-select: none;
+	pointer-events: none;
 	font-size: 2rem;
 	margin: auto auto 1rem auto;
 }
@@ -175,10 +191,33 @@ h1 {
 	font-weight: 700;
 	font-size: 2.5rem;
 	color: var(--black);
+}
+#browser > div > h1 {
 	margin-top: -1rem;
+	float: left;
+}
+#browser > div > h1:hover {
+	background-color: hsla(0, 0%, 0%, 0.3);
+	outline: .25rem solid hsla(0, 0%, 0%, 0.3);
+	cursor: pointer;
+	border-radius: .25rem;
+}
+#browser > div > h1::after {
+	content: "/";
+	padding-right: .1rem;
+	margin-left: .1rem;
+}
+#browser > div h1:first-of-type::before {
+	content: "Root";
+	color: var(--lime);
+}
+#browser > div > h1:not(:first-of-type) {
+	padding-left: .1rem;
+	margin-left: .5rem;
 }
 #browser-item-container {
 	margin: 1rem 0;
+	clear: both;
 	display: flex;
 	flex-wrap: wrap;
 	gap: 1rem;
@@ -215,17 +254,47 @@ h1 {
 		filter: brightness(90%);
 	}
 }
+.browser-item[data-item-type="audio"] > div{
+	background: var(--background), url(./images/music.svg);
+	background-size: cover;
+}
+.browser-item[data-item-type=container] > div {
+	float: left;
+	background: var(--background), url(./images/container-big.svg);
+	background-size: cover;
+}
 .browser-item > div {
-	margin-bottom: 0.4rem;
+	margin-bottom: .4rem;
 	width: 100%;
 	border-radius: .5rem;
 	aspect-ratio: 1/1;
-	background: var(--background), url(./images/music.svg);
+	background-position: center !important;
 	background-size: cover;
 	transition: 0.25s;
 }
+.browser-item > div::before {
+	border-radius: .5rem;
+	content: "";
+	float: left;
+	position: relative;
+	width: 100%;
+	aspect-ratio: 1/1;
+	z-index: 1;
+	opacity: 0%;
+	transition: opacity .25s;
+}
+.browser-item > div:hover::before {
+	opacity: 100%;
+}
+.browser-item[data-item-type="audio"] > div::before {
+	background: url(./images/play-banner.svg) no-repeat;
+	background-size: cover;
+}
+.browser-item[data-item-type=container] > div::before {
+	background: url(./images/container-open-banner.svg) no-repeat;
+	background-size: cover;
+}
 .browser-item > div:hover {
-	background: url(./images/play-banner.svg) no-repeat, var(--background), url(./images/music.svg);
 	background-size: cover;
 	cursor: pointer;
 }
@@ -237,7 +306,7 @@ h1 {
 	height: 1.5rem;
 	display: block;
 	margin: auto;
-	color: var(--dark-gray);
+	color: var(--lighter-black);
 }
 .browser-item span:first-of-type {
 	font-weight: bold;
@@ -250,14 +319,13 @@ h1 {
 #music-control {
 	grid-area: music-control;
 	background-color: var(--white);
-	/* width: 100vw; height: 100px; */
-	clear: both;
+	padding: .75rem;
 	display: flex;
 	align-items: center;
 }
 #music-control > img {
-	height: 80%;
-	margin-left: 10px;
+	height: 100%;
+	object-fit:cover;
 	aspect-ratio: 1/1;
 	border-radius: 5px;
 }

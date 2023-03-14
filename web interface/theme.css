@@ -7,7 +7,8 @@
 	--yellow : hsl(40, 90%, 50%);
 	--lime : hsl(145, 70%, 50%);
 	--green : hsl(100, 30%, 50%);
-	--lighter-black : hsl(180, 10%, 25%);
+	--lighter-black : hsl(180, 10%, 35%);
+	--light-black : hsl(180, 10%, 25%);
 	--black : hsl(180, 10%, 15%);
 	
 	--c-white : hsl(0, 0%, 90%);
@@ -18,7 +19,8 @@
 	--c-yellow : hsl(40, 90%, 50%);
 	--c-lime : hsl(145, 70%, 50%);
 	--c-green : hsl(100, 30%, 50%);
-	--c-lighter-black : hsl(180, 10%, 25%);
+	--c-lighter-black : hsl(180, 10%, 35%);
+	--c-light-black : hsl(180, 10%, 25%);
 	--c-black : hsl(180, 10%, 15%);
 }
 @media (prefers-color-scheme: dark) {
@@ -27,11 +29,12 @@
 		--lighter-gray: hsl(0, 0%, 15%);
 		--light-gray: hsl(0, 0%, 20%);
 		--gray: hsl(0, 0%, 30%);
-		--dark-gray: hsl(0, 0%, 40%);
 		--yellow : hsl(40, 90%, 50%);
+		--dark-gray: hsl(0, 0%, 40%);
 		--lime : hsl(145, 70%, 50%);
 		--green : hsl(100, 30%, 50%);
-		--lighter-black : hsl(180, 10%, 25%);
+		--lighter-black : hsl(180, 10%, 65%);
+		--light-black : hsl(180, 10%, 75%);
 		--black : hsl(180, 10%, 85%);
 	}
 }
