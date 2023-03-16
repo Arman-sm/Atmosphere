@@ -108,7 +108,7 @@ async function refresh(selectedContainerID = "") {
 		}
 		)
 		)
-	};
+	}
 
 	for (const containerID of containerIDs) {
 		queryContainerMetadata(containerID, "Title").then(

@@ -1,102 +1,91 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Atmosphere</title>
-	<link rel="icon" href="/web/images/favicon.svg"/>
-	<link rel="stylesheet" type="text/css" href="/web/theme.css"/>
-	<link rel="stylesheet" type="text/css" href="/web/style.css"/>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<script src="/web/scripts/Howler.js" defer></script>
-	<script src="/web/scripts/home_music_controller.js" defer></script>
-	<script src="/web/scripts/home_context_menu.js" defer></script>
-	<script src="/web/scripts/home_user_customization.js" defer></script>
-	<script src="/web/scripts/home_upload_controller.js" defer></script>
-	<script src="/web/scripts/jsmediatags.min.js" defer></script>
-</head>
-<body>
+<script>
+	import Browser from "./Browser.svelte"
+
+	let path = ""
+</script>
 <div id="container">
 <div id="context-menu" class="invisible">
 	<button type="button"
-		onmouseup="
+		on::mouseup={() => {
 		fetch(`/api/v1/${this.parentElement.getAttribute('data-item-type')}/${this.parentElement.getAttribute('data-id')}`, {
 			method: 'DELETE'
 		}
-		).then(() => refresh(containerPath.map(item => item[0]).join('/')))"
-		>
-		<img src="/web/images/garbage-can.svg"/>
+		).then(() => refresh(containerPath.map(item => item[0]).join('/')))}
+		}>
+		<img src="/web/images/garbage-can.svg" alt=""/>
 		<span>Delete</span>
 	</button>
 	<button type="button"
-		onmouseup="
+		on:mouseup={
 			fetch(
 				`/api/v1/audio/${this.parentElement.getAttribute('data-id')}?query=Cover`,
 				{method: 'DELETE'}
 			).then(() => refresh(containerPath.map(item => item[0]).join('/')))
-		">
-		<img src="/web/images/garbage-can.svg"/>
+		}>
+		<img src="/web/images/garbage-can.svg" alt=""/>
 		<span>Delete Cover</span>
 	</button>
 	<button type="button"
-		onmouseup="
+		on::mouseup={
 		fetch('/api/v1/audio/' + this.parentElement.getAttribute('data-id'), {
 			method : 'PATCH',
 			headers : {
 				'Content-Type' : 'application/json'
 			},
 			body : JSON.stringify({Title:''})
-		}).then(refresh)"
+		}).then(refresh)}
 	>
-		<img src="/web/images/garbage-can.svg"/>
+		<img src="/web/images/garbage-can.svg" alt=""/>
 		<span>Delete Title</span>
 	</button>
 	<button type="button"
-		onmouseup="
+		on::mouseup={
 		fetch('/api/v1/audio/' + this.parentElement.getAttribute('data-id'), {
 			method : 'PATCH',
 			headers : {
 				'Content-Type' : 'application/json'
 			},
 			body : JSON.stringify({Singer:''})
-		}).then(refresh)">
-		<img src="/web/images/garbage-can.svg"/>
+		}).then(refresh)}>
+		<img src="/web/images/garbage-can.svg" alt=""/>
 		<span>Delete Singer</span>
 	</button>
 	<button type="button">
-		<img src="/web/images/pen.svg"/>
+		<img src="/web/images/pen.svg" alt=""/>
 		<span>Edit</span>
 	</button>
 </div>
 <!-- #region upload modal -->
 <div id="upload-background" class="invisible"
-onclick="if (event.target == this) { this.classList.toggle('invisible', true); }">
+onclick={() => {if (event.target == this) { this.classList.toggle('invisible', true) }}}>
 <!-- #region upload form -->
 <form id="upload-page" action="/api/v1/audio" class="page page-audio-upload" method="POST" enctype="multipart/form-data"
-	onsubmit="
+	on::submit={() => {
 		fetch('/api/v1/audio/', { method: 'POST', body: new FormData(this) }).then(() => {
 			refresh(containerPath.map(item => item[0]).join('/'))
 			this.reset()
-			uploadPage()
+			// uploadPage()
 		})
 		return false
-	"
+		}
+	}
 	>
 	<div id="upload-file-section"
-		ondrop="fileDropForUpload(event, this); this.classList.toggle('active-drop', false)"
-		ondragenter="this.classList.toggle('active-drop', true)"
-		ondragleave="this.classList.toggle('active-drop', false)"
-		ondragover="event.preventDefault()">
+		on:drop={() => {fileDropForUpload(event, this); this.classList.toggle('active-drop', false)}}
+		on:dragenter={this.classList.toggle('active-drop', true)}
+		on:dragleave={this.classList.toggle('active-drop', false)}
+		on:dragover|preventDefault>
 		<span
-		ondrop="fileDropForUpload(event, this.parentElement); this.parentElement.classList.add('active-drop')"
-		ondragenter="this.parentElement.classList.add('active-drop')"
-		ondragover="event.preventDefault()"
+		on:drop={() => {fileDropForUpload(event, this.parentElement); this.parentElement.classList.add('active-drop')}}
+		on:dragenter={this.parentElement.classList.add('active-drop')}
+		on:dragover|preventDefault
 		>Drag and Drop</span>
-			<button type="button" class="submit" onclick="document.getElementById('upload-audio-file-input').click()"
+			<button type="button" class="submit" on:click={document.getElementById('upload-audio-file-input').click()}
 				style="width: 8rem; margin-bottom: auto; box-shadow: 0 0.25rem 0.75rem 0 var(--gray);"
 			>Select File</button>
 			<!-- hidden -->
 			<input id="upload-audio-file-input" type="file" name="audio" style="display: none;" required
-				onchange="fillUploadForm(this.files[0])"
+				on:change={fillUploadForm(this.files[0])}
 				accept=".mp3, .mpeg, .opus, .ogg, .oga, .wav, .aac, .caf, .m4a, .mp4, .weba, .webm, .dolby, .flac"
 			/>
 	</div>
@@ -107,11 +96,11 @@ onclick="if (event.target == this) { this.classList.toggle('invisible', true); }
 	<!-- 2nd page -->
 	<div id="sound-info" class="invisible">
 		<input type="file" id="upload-picture" name="cover" class="invisible"
-			onchange="uploadPictureGraphic.src = toDataURI(uploadPicture.files[0])"/>
-		<img src="/web/images/music.svg" id="upload-picture-graphic"
-		onclick="uploadPicture.click()" style="cursor: pointer;"
+			on:change={uploadPictureGraphic.src = toDataURI(uploadPicture.files[0])}/>
+		<img src="/web/images/music.svg" id="upload-picture-graphic" alt="Audio cover"
+			on:click={uploadPicture.click()} style="cursor: pointer;"
 		/>
-		<img src="/web/images/change-cover-overlay.svg" id="upload-picture-graphic-overlay"/>
+		<img src="/web/images/change-cover-overlay.svg" id="upload-picture-graphic-overlay" alt=""/>
 		<div>
 			<input type="text" id="upload-title" name="Title" maxlength="50" placeholder="Title" class="no-max-width"/>
 			<input type="text" id="upload-singer" name="Singer" maxlength="50" placeholder="Singer"class="no-max-width"/>
@@ -130,39 +119,32 @@ onclick="if (event.target == this) { this.classList.toggle('invisible', true); }
 </div>
 <!-- #endregion -->
 <div id="quick-access">
-	<button type="button" id="quick-access-profile" class="black no-shadow" onclick="location.href = '/login'">
+	<button type="button" id="quick-access-profile" class="black no-shadow" on:click={location.href = '/login'}>
 		<div>
 			<span></span>
 		</div>
 		<span></span>
 	</button>
 	<button type="button" id="quick-access-upload" title="upload"
-		class="black no-shadow" onclick="page('audio-upload')">
-		<img src="./web/images/upload.svg" alt="">
+		class="black no-shadow" on:click={page('audio-upload')}>
+		<img src="./images/upload.svg" alt="">
 		<span>Upload</span>
 	</button>
 </div>
-<div id="browser">
-	<div>
-		<h1></h1>
-		<h1>A</h1>
-	</div>
-	<div id="browser-item-container">
-	</div>
-</div>
+<Browser {path}/>
 <div id="music-control">
-	<img src="./web/images/music.svg" alt="audio cover" onerror="this.src = 'web/images/music.svg'"/>
+	<img src="./images/music.svg" alt="audio cover" on:error={this.src = 'web/images/music.svg'}/>
 	<div id="controller">
 		<div class="flex flex-center">
 			<button type="button" class="no-border" title="previous">
-				<img src="./web/images/next.svg" style="rotate: 180deg;" class="unselectable" alt=""/>
+				<img src="./images/next.svg" style="rotate: 180deg;" class="unselectable" alt=""/>
 			</button>
 			<button type="button" class="no-border"
-				onclick="if (window.player.playing()) {pause()} else {resume()}" title="play/pause">
-				<img src="./web/images/pause.svg" class="unselectable" alt=""/>
+				on:click={() => {if (window.player.playing()) {pause()} else {resume()}}} title="play/pause">
+				<img src="./images/pause.svg" class="unselectable" alt=""/>
 			</button>
 			<button type="button" class="no-border" title="next">
-				<img src="./web/images/next.svg" class="unselectable" alt=""/>
+				<img src="./images/next.svg" class="unselectable" alt=""/>
 			</button>
 		</div>
 		<div id="timeline">
@@ -173,5 +155,3 @@ onclick="if (event.target == this) { this.classList.toggle('invisible', true); }
 	</div>
 </div>
 </div>
-</body>
-</html>

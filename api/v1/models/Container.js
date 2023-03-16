@@ -9,7 +9,7 @@ class Container {
 	#title
 	#containerID
 
-	static coversDirectory = new Directory("./container/covers")
+	static coversDirectory = new Directory("./data/container/covers")
 
 	async updateMetadata() {
 		const [result,] = (await this.database.query("SELECT * FROM Containers WHERE ID = ?;", [this.ID]))[0]
