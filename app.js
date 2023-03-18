@@ -26,7 +26,12 @@ app.all("/*", (req, res) => {
 	res.status(404).sendFile(resolvePath("./web/public/404.html"))
 })
 
-app.listen(process.env.PORT, () => {
-	console.log(`App listening on port ${process.env.PORT}...`)
-	console.log(`\n\x1b[34mGenerated address: \x1b[1mhttp://${require("ip").address()}:${process.env.PORT}\x1b[0m`)
-})
+try {
+	
+	app.listen(process.env.PORT || 6812, () => {
+		console.log(`App listening on port ${process.env.PORT || 6812}...`)
+		console.log(`\n\x1b[34mGenerated address: \x1b[1mhttp://${require("ip").address()}:${process.env.PORT || 6812}\x1b[0m`)
+	})
+} catch (error) {
+	process.exit()
+}

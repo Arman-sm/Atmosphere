@@ -12,7 +12,8 @@ class Container {
 	static coversDirectory = new Directory("./data/container/covers")
 
 	async updateMetadata() {
-		const [result,] = (await this.database.query("SELECT * FROM Containers WHERE ID = ?;", [this.ID]))[0]
+		const [result] = (await this.database.query("SELECT * FROM Containers WHERE ID = ?;", [this.ID]))[0]
+
 		if (!result) 
 			throw "Container Not Found"
 
@@ -84,9 +85,10 @@ class Container {
 				req.container = await Container.new(req.params.containerID, database)
 				if (req.user.ID === req.container?.ownerID)
 					return next()
-			} catch (err) { console.error(err) }
-			
-			res.status(404).end("Container Not Found")
+			} catch (err) {
+				res.status(404).end("Container Not Found")
+			}
+
 		} catch (err) {
 			res.status(404).end(err)
 		}

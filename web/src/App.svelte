@@ -1,17 +1,20 @@
 <script>
 	import Browser from "./Browser.svelte"
+	import MusicController from "./MusicController.svelte";
 
-	let path = ""
+	let viewID = ""
+
+	let playAudio	
 </script>
 <div id="container">
 <div id="context-menu" class="invisible">
 	<button type="button"
-		on::mouseup={() => {
+		on:mouseup={() => {
 		fetch(`/api/v1/${this.parentElement.getAttribute('data-item-type')}/${this.parentElement.getAttribute('data-id')}`, {
 			method: 'DELETE'
 		}
-		).then(() => refresh(containerPath.map(item => item[0]).join('/')))}
-		}>
+		).then(() => {viewID = viewID})
+		}}>
 		<img src="/web/images/garbage-can.svg" alt=""/>
 		<span>Delete</span>
 	</button>
@@ -20,33 +23,33 @@
 			fetch(
 				`/api/v1/audio/${this.parentElement.getAttribute('data-id')}?query=Cover`,
 				{method: 'DELETE'}
-			).then(() => refresh(containerPath.map(item => item[0]).join('/')))
+			).then(() => viewID = viewID)
 		}>
 		<img src="/web/images/garbage-can.svg" alt=""/>
 		<span>Delete Cover</span>
 	</button>
 	<button type="button"
-		on::mouseup={
+		on:mouseup={
 		fetch('/api/v1/audio/' + this.parentElement.getAttribute('data-id'), {
 			method : 'PATCH',
 			headers : {
 				'Content-Type' : 'application/json'
 			},
 			body : JSON.stringify({Title:''})
-		}).then(refresh)}
+		}).then(() => viewID = viewID)}
 	>
 		<img src="/web/images/garbage-can.svg" alt=""/>
 		<span>Delete Title</span>
 	</button>
 	<button type="button"
-		on::mouseup={
+		on:mouseup={
 		fetch('/api/v1/audio/' + this.parentElement.getAttribute('data-id'), {
 			method : 'PATCH',
 			headers : {
 				'Content-Type' : 'application/json'
 			},
 			body : JSON.stringify({Singer:''})
-		}).then(refresh)}>
+		}).then(() => viewID = viewID)}>
 		<img src="/web/images/garbage-can.svg" alt=""/>
 		<span>Delete Singer</span>
 	</button>
@@ -56,13 +59,16 @@
 	</button>
 </div>
 <!-- #region upload modal -->
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div id="upload-background" class="invisible"
-onclick={() => {if (event.target == this) { this.classList.toggle('invisible', true) }}}>
+	on:click={event => {if (event.target == this) { this.classList.toggle('invisible', true)}}}
+>
 <!-- #region upload form -->
-<form id="upload-page" action="/api/v1/audio" class="page page-audio-upload" method="POST" enctype="multipart/form-data"
-	on::submit={() => {
+<form id="upload-page" action="/api/v1/audio" class="page page-audio-upload" method="POST"
+	enctype="multipart/form-data"
+	on:submit={() => {
 		fetch('/api/v1/audio/', { method: 'POST', body: new FormData(this) }).then(() => {
-			refresh(containerPath.map(item => item[0]).join('/'))
+			viewID = viewID
 			this.reset()
 			// uploadPage()
 		})
@@ -97,6 +103,7 @@ onclick={() => {if (event.target == this) { this.classList.toggle('invisible', t
 	<div id="sound-info" class="invisible">
 		<input type="file" id="upload-picture" name="cover" class="invisible"
 			on:change={uploadPictureGraphic.src = toDataURI(uploadPicture.files[0])}/>
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<img src="/web/images/music.svg" id="upload-picture-graphic" alt="Audio cover"
 			on:click={uploadPicture.click()} style="cursor: pointer;"
 		/>
@@ -131,27 +138,6 @@ onclick={() => {if (event.target == this) { this.classList.toggle('invisible', t
 		<span>Upload</span>
 	</button>
 </div>
-<Browser {path}/>
-<div id="music-control">
-	<img src="./images/music.svg" alt="audio cover" on:error={this.src = 'web/images/music.svg'}/>
-	<div id="controller">
-		<div class="flex flex-center">
-			<button type="button" class="no-border" title="previous">
-				<img src="./images/next.svg" style="rotate: 180deg;" class="unselectable" alt=""/>
-			</button>
-			<button type="button" class="no-border"
-				on:click={() => {if (window.player.playing()) {pause()} else {resume()}}} title="play/pause">
-				<img src="./images/pause.svg" class="unselectable" alt=""/>
-			</button>
-			<button type="button" class="no-border" title="next">
-				<img src="./images/next.svg" class="unselectable" alt=""/>
-			</button>
-		</div>
-		<div id="timeline">
-			<span>0:00</span>
-			<input type="range" min="0" max="60" value="0" aria-label="timeline"/>
-			<span>0:00</span>
-		</div>
-	</div>
-</div>
+<Browser viewID={viewID} {playAudio}/>
+<MusicController bind:playAudio/>
 </div>

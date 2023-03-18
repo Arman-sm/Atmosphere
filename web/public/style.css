@@ -175,11 +175,11 @@ button {
 		;
 		grid-template-rows: auto 1fr 6rem;
 	}
-	#browser {
+	.browser {
 		padding: 2rem 1rem !important;
 	}
 }
-#browser {
+.browser {
 	grid-area: browser;
 	overflow-y: scroll;
 	padding: 3rem;
@@ -192,37 +192,37 @@ h1 {
 	font-size: 2.5rem;
 	color: var(--black);
 }
-#browser > div > h1 {
+.browser > div > h1 {
 	margin-top: -1rem;
 	float: left;
 }
-#browser > div > h1:hover {
+.browser > div > h1:hover {
 	background-color: hsla(0, 0%, 0%, 0.3);
 	outline: .25rem solid hsla(0, 0%, 0%, 0.3);
 	cursor: pointer;
 	border-radius: .25rem;
 }
-#browser > div > h1::after {
+.browser > div > h1::after {
 	content: "/";
 	padding-right: .1rem;
 	margin-left: .1rem;
 }
-#browser > div h1:first-of-type::before {
+.browser > div h1:first-of-type::before {
 	content: "Root";
 	color: var(--lime);
 }
-#browser > div > h1:not(:first-of-type) {
+.browser > div > h1:not(:first-of-type) {
 	padding-left: .1rem;
 	margin-left: .5rem;
 }
-#browser-item-container {
+.baseBrowser {
 	margin: 1rem 0;
 	clear: both;
 	display: flex;
 	flex-wrap: wrap;
 	gap: 1rem;
 }
-.browser-item {
+.browserItem {
 	flex-grow: 1;
 	min-width: 8rem;
 	max-width: 20rem;
@@ -237,33 +237,33 @@ h1 {
 	transition: box-shadow 0.25s;
 	overflow: hidden;
 }
-.browser-item:hover {
+.browserItem:hover {
 	background-color: var(--white) !important;
 }
-.browser-item:hover {
+.browserItem:hover {
 	box-shadow: 0 6px 10px 0 var(--gray);
 }
 @media (prefers-color-scheme: dark) {
-	.browser-item {
+	.browserItem {
 		box-shadow: 0 3px 5px 0 var(--light-gray);
 	}
-	.browser-item:hover {
+	.browserItem:hover {
 		box-shadow: 0 6px 10px 0 var(--light-gray);
 	}
-	.browser-item > div {
+	.browserItem > div {
 		filter: brightness(90%);
 	}
 }
-.browser-item[data-item-type="audio"] > div{
+.browserItem[data-item-type="audio"] > div{
 	background: var(--background), url(./images/music.svg);
 	background-size: cover;
 }
-.browser-item[data-item-type=container] > div {
+.browserItem[data-item-type=container] > div {
 	float: left;
 	background: var(--background), url(./images/container-big.svg);
 	background-size: cover;
 }
-.browser-item > div {
+.browserItem > div {
 	margin-bottom: .4rem;
 	width: 100%;
 	border-radius: .5rem;
@@ -272,7 +272,7 @@ h1 {
 	background-size: cover;
 	transition: 0.25s;
 }
-.browser-item > div::before {
+.browserItem > div::before {
 	border-radius: .5rem;
 	content: "";
 	float: left;
@@ -283,22 +283,22 @@ h1 {
 	opacity: 0%;
 	transition: opacity .25s;
 }
-.browser-item > div:hover::before {
+.browserItem > div:hover::before {
 	opacity: 100%;
 }
-.browser-item[data-item-type="audio"] > div::before {
+.browserItem[data-item-type="audio"] > div::before {
 	background: url(./images/play-banner.svg) no-repeat;
 	background-size: cover;
 }
-.browser-item[data-item-type=container] > div::before {
+.browserItem[data-item-type=container] > div::before {
 	background: url(./images/container-open-banner.svg) no-repeat;
 	background-size: cover;
 }
-.browser-item > div:hover {
+.browserItem > div:hover {
 	background-size: cover;
 	cursor: pointer;
 }
-.browser-item > span  {
+.browserItem > span  {
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	overflow: hidden;
@@ -308,7 +308,7 @@ h1 {
 	margin: auto;
 	color: var(--lighter-black);
 }
-.browser-item span:first-of-type {
+.browserItem span:first-of-type {
 	font-weight: bold;
 	color: var(--black);
 	display: block;
