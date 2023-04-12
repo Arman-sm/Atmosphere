@@ -50,10 +50,10 @@ function registerAudioToDB(database, audioID, ownerID, metadata) {
 function registerAudio(req, res, database) {
 	if (!req.files.audio?.[0]) res.status(400).end("No Audio was Sent")
 	if (req.files.cover?.[0]) {
-		rename(
-			"./audio/covers/" + req.files.cover[0].filename,
-			`./audio/covers/${req.files.audio[0].filename}.${req.files.cover[0].mimetype.split("/").at(-1)}`
-		)
+		Audio
+			.coversDirectory
+			.file(req.files.cover[0].filename)
+			.rename(`${req.files.audio[0].filename}.${req.files.cover[0].mimetype.split("/").at(-1)}`)
 	}
 	Audio.register(req.files.audio[0].filename, req.user.ID, database).then(
 		audio => {

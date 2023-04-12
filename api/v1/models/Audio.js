@@ -16,9 +16,9 @@ class Audio {
 		'mp3', 'mpeg', 'opus', 'ogg', 'oga', 'wav', 'aac', 'caf', 'm4a', 'mp4','weba', 'webm', 'dolby', 'flac'
 	]
 
-	static audiosDirectory = new Directory("./audio/audios")
-	static coversDirectory = new Directory("./audio/covers")
-	static lyricsDirectory = new Directory("./audio/lyrics")
+	static audiosDirectory = new Directory("./data/audio/audios")
+	static coversDirectory = new Directory("./data/audio/covers")
+	static lyricsDirectory = new Directory("./data/audio/lyrics")
 
 	async updateMetadata() {
 		const [result,] = (await this.database.query("SELECT * FROM Audios WHERE ID = ?;", [this.ID]))[0]

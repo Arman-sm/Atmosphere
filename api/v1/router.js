@@ -26,10 +26,10 @@ const router = express.Router()
 const mysql = require("mysql2")
 
 databaseOptions = {
-	host:process.env.DB_ADDRESS,
-	port:process.env.DB_PORT,
+	host:process.env.DB_ADDRESS  || "localhost",
+	port:process.env.DB_PORT     || 3306,
 	user:process.env.DB_USER,
-	database:process.env.DB_NAME
+	database:process.env.DB_NAME || "Atmosphere"
 }
 
 if (process.env.DB_PASSWORD) databaseOptions.password = process.env.DB_PASSWORD

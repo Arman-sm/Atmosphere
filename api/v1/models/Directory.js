@@ -20,7 +20,7 @@ class File {
 	}
 
 	async rename(newName) {
-		await filesystem.rename(this.path, newName)
+		await filesystem.rename(this.path, this.path.slice(0, this.path.replaceAll("\\", "/").lastIndexOf("/") + 1) + newName)
 		this.path = `./${newName}`
 	}
 
